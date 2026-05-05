@@ -1,0 +1,3492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Minor Ailments Prescribing Assistant — Ontario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+
+<style>
+  :root {
+    --bg: #FAF7F2;
+    --bg-deep: #F2EDE3;
+    --surface: #FFFFFF;
+    --ink: #1A1A1F;
+    --ink-soft: #4A4A52;
+    --ink-faint: #8B8B92;
+    --rule: #E5E0D5;
+    --rule-strong: #D0C9B8;
+    --primary: #0E4F4F;
+    --primary-hover: #0A3A3A;
+    --primary-soft: #E0EFEE;
+    --accent: #B5470F;
+    --accent-soft: #F4E4D5;
+    --success: #265E3D;
+    --success-soft: #DEE8DE;
+    --warn: #8A5A00;
+    --warn-soft: #F4ECCF;
+    --stop: #8E2828;
+    --stop-soft: #F0DCDC;
+    --shadow-sm: 0 1px 2px rgba(26,26,31,.04);
+    --shadow-md: 0 4px 12px rgba(26,26,31,.06), 0 1px 3px rgba(26,26,31,.04);
+    --shadow-lg: 0 12px 32px rgba(26,26,31,.08), 0 2px 6px rgba(26,26,31,.04);
+    --font-display: "Newsreader", Georgia, serif;
+    --font-body: "IBM Plex Sans", -apple-system, system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(14,79,79,.025) 0%, transparent 50%),
+      radial-gradient(circle at 100% 50%, rgba(181,71,15,.018) 0%, transparent 50%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection { background: var(--primary-soft); color: var(--ink); }
+
+  /* Typography */
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; margin: 0; color: var(--ink); }
+  h1 { font-size: 2.75rem; font-weight: 500; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.15rem; font-weight: 600; }
+  p { margin: 0 0 1em 0; }
+  .display-italic { font-family: var(--font-display); font-style: italic; font-weight: 400; }
+  .mono { font-family: var(--font-mono); font-size: 0.9em; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+
+  /* Layout */
+  .app { min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.92);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display);
+    font-size: 1.15rem; font-weight: 500; color: var(--ink);
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--primary);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { display: block; }
+  .pharmacy-tag {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    padding: 4px 10px;
+    border: 1px solid var(--rule);
+    border-radius: 100px;
+    background: var(--bg);
+  }
+  .save-indicator {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+  .save-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success);
+  }
+
+  .demo-banner {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-bottom: 1px solid #E8C8AA;
+    padding: 8px 28px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  main {
+    flex: 1;
+    padding: 48px 28px 80px;
+    max-width: 880px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  main.wide { max-width: 1100px; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 36px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-tight { padding: 24px; }
+  .card-feature {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 36px 36px 32px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-feature::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+  }
+
+  /* Buttons */
+  .btn {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 14px 22px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1.2;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--rule-strong);
+  }
+  .btn-secondary:hover { background: var(--bg); border-color: var(--ink-soft); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-soft);
+  }
+  .btn-ghost:hover { color: var(--ink); background: var(--bg); }
+  .btn-danger {
+    background: var(--stop);
+    color: white;
+  }
+  .btn-danger:hover { background: #6F1F1F; }
+  .btn-large {
+    padding: 18px 28px;
+    font-size: 1.05rem;
+    min-height: 56px;
+  }
+  .btn-block { width: 100%; }
+  .btn[disabled] { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+  /* Choice buttons (one-question-per-screen) */
+  .choice-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+  .choice {
+    background: var(--surface);
+    border: 1.5px solid var(--rule);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+  }
+  .choice:hover {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    transform: translateY(-1px);
+  }
+  .choice:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .choice-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg-deep);
+    color: var(--ink-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .choice:hover .choice-letter { background: var(--primary); color: white; }
+  .choice-content { flex: 1; }
+  .choice-arrow { color: var(--ink-faint); font-size: 1.2rem; }
+  .choice:hover .choice-arrow { color: var(--primary); transform: translateX(2px); }
+
+  /* Form inputs */
+  .field { margin-bottom: 22px; }
+  .label {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .label-hint {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-top: 4px;
+    font-weight: 400;
+  }
+  .input, .textarea, .select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--rule-strong);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    background: var(--surface);
+    color: var(--ink);
+    transition: border-color 0.12s, box-shadow 0.12s;
+    min-height: 48px;
+  }
+  .input:focus, .textarea:focus, .select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+  }
+  .textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) {
+    .field-row { grid-template-columns: 1fr; }
+  }
+
+  /* Progress dots */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+  .progress-dot {
+    height: 6px;
+    flex: 1;
+    background: var(--rule);
+    border-radius: 100px;
+    transition: background 0.3s ease;
+  }
+  .progress-dot.done { background: var(--primary); }
+  .progress-dot.current { background: var(--primary); position: relative; }
+  .progress-dot.current::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    background: var(--primary);
+    opacity: 0.15;
+    border-radius: 100px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+
+  /* Citation badge */
+  .citation {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  /* Stop / red flag */
+  .stop-card {
+    background: var(--stop-soft);
+    border: 1.5px solid var(--stop);
+    border-radius: 14px;
+    padding: 36px;
+  }
+  .stop-card .eyebrow { color: var(--stop); }
+  .stop-card h2 { color: var(--stop); }
+
+  /* Success */
+  .success-card {
+    background: var(--success-soft);
+    border: 1.5px solid var(--success);
+    border-radius: 14px;
+    padding: 36px;
+  }
+  .success-card .eyebrow { color: var(--success); }
+
+  /* Tags */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    font-family: var(--font-mono);
+  }
+  .tag-success { background: var(--success-soft); color: var(--success); }
+  .tag-warn { background: var(--warn-soft); color: var(--warn); }
+  .tag-stop { background: var(--stop-soft); color: var(--stop); }
+  .tag-neutral { background: var(--bg-deep); color: var(--ink-soft); }
+
+  /* Tables / review */
+  .review-list {
+    border-top: 1px solid var(--rule);
+  }
+  .review-item {
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: start;
+  }
+  .review-question { color: var(--ink-soft); font-size: 0.95rem; }
+  .review-answer { font-weight: 500; color: var(--ink); text-align: right; }
+
+  /* Document preview (rx, soap, handout) */
+  .document {
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    border-radius: 8px;
+    padding: 36px 40px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .document h3 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+  }
+  .document .doc-header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+  }
+  .document .doc-meta {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .document .soap-section {
+    margin-bottom: 18px;
+  }
+  .document .soap-letter {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.6rem;
+    color: var(--primary);
+    margin-right: 8px;
+    float: left;
+    line-height: 1;
+    padding-top: 4px;
+  }
+  .document .soap-body {
+    margin-left: 36px;
+  }
+  .document .rx-symbol {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* Hero (homepage) */
+  .hero { text-align: center; padding: 40px 0 64px; }
+  .hero h1 {
+    font-size: 3.25rem;
+    margin-bottom: 18px;
+    letter-spacing: -0.02em;
+  }
+  .hero .lede {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 580px;
+    margin: 0 auto 36px;
+  }
+
+  .condition-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 28px;
+  }
+  @media (max-width: 720px) {
+    .condition-grid { grid-template-columns: 1fr; }
+  }
+  .condition-card {
+    background: var(--surface);
+    border: 1.5px solid var(--rule);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 140px;
+    font-family: inherit;
+    color: inherit;
+  }
+  .condition-card:hover:not([disabled]) {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .condition-card[disabled] { opacity: 0.5; cursor: not-allowed; }
+  .condition-card h4 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 500; }
+  .condition-card .desc { color: var(--ink-soft); font-size: 0.92rem; flex: 1; }
+
+  /* Past assessments */
+  .past-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 8px;
+    margin: 0 -8px;
+    border-bottom: 1px solid var(--rule);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s;
+    text-align: left;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: calc(100% + 16px);
+    font-family: inherit;
+    color: inherit;
+  }
+  .past-row:hover { background: var(--bg); }
+  .past-row .past-chevron { color: var(--ink-faint); font-size: 1.1rem; transition: transform 0.12s, color 0.12s; }
+  .past-row:hover .past-chevron { color: var(--primary); transform: translateX(2px); }
+  .past-row:last-child { border-bottom: none; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 28px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+    background: var(--bg-deep);
+  }
+
+  /* Header section + back button */
+  .screen-header {
+    margin-bottom: 28px;
+  }
+  .back-button {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 6px 0;
+    cursor: pointer;
+    margin-bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .back-button:hover { color: var(--ink); }
+
+  /* Misc */
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .row-end { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+  .row-between { display: flex; gap: 12px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .stack > * + * { margin-top: 16px; }
+  .stack-lg > * + * { margin-top: 28px; }
+  .text-soft { color: var(--ink-soft); }
+  .text-faint { color: var(--ink-faint); }
+  .small { font-size: 0.92rem; }
+  .center { text-align: center; }
+
+  hr { border: none; border-top: 1px solid var(--rule); margin: 28px 0; }
+
+  /* Print */
+  @media print {
+    body { background: white; }
+    .topbar, .demo-banner, footer, .no-print, .back-button { display: none !important; }
+    main { padding: 0; max-width: 100%; }
+    .document { border: none; box-shadow: none; padding: 0; }
+    .card, .card-feature { box-shadow: none; border: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+
+const { useState, useEffect, useMemo, useRef } = React;
+
+/* ============================================================
+   STORAGE
+   ============================================================ */
+const STORAGE_KEY = "ma-assist-v1";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn("Save failed:", e);
+  }
+}
+
+const initialState = {
+  pharmacy: null,
+  current: null, // current in-progress assessment
+  past: [],      // completed assessments
+};
+
+/* ============================================================
+   ALGORITHM DEFINITIONS
+   These are JSON config — to add a condition, add an entry here.
+   Citations point to publicly available OCP/CPhA algorithm sources.
+   ============================================================ */
+
+const CONDITIONS = {
+  uti: {
+    id: "uti",
+    name: "Uncomplicated UTI (Cystitis)",
+    short: "UTI",
+    description: "Female patients aged 16–65 with classic cystitis symptoms.",
+    citation: "OCP Assessment & Prescribing Algorithm — Uncomplicated UTI (Cystitis), v.2024-10",
+    estimatedTime: "3–4 min",
+    available: true,
+    steps: [
+      {
+        id: "intro",
+        type: "intro",
+        title: "Uncomplicated UTI Assessment",
+        body: "This assessment walks through the OCP algorithm for uncomplicated cystitis. You'll be asked questions about symptoms, history, and red flags. The tool documents the assessment but does not make clinical decisions — you do.",
+      },
+      {
+        id: "sex_at_birth",
+        type: "question",
+        section: "Eligibility",
+        question: "Patient assigned female at birth?",
+        help: "OCP UTI minor ailments scope applies to patients assigned female at birth.",
+        options: [
+          { label: "Yes", value: "female" },
+          { label: "No", value: "male", redFlag: "Male patients with urinary symptoms require medical assessment to rule out other causes (e.g., prostatitis). Refer to physician." },
+        ],
+      },
+      {
+        id: "age",
+        type: "input",
+        section: "Eligibility",
+        question: "Patient age (years)?",
+        inputType: "number",
+        validate: (v) => {
+          const n = parseInt(v, 10);
+          if (isNaN(n) || n < 0 || n > 120) return "Enter a valid age";
+          if (n < 16) return { redFlag: "Patient under 16 — refer to physician for assessment." };
+          if (n > 65) return { redFlag: "Patient over 65 — increased risk of complicated UTI. Refer to physician." };
+          return null;
+        },
+      },
+      {
+        id: "pregnant",
+        type: "question",
+        section: "Eligibility",
+        question: "Is the patient pregnant or possibly pregnant?",
+        options: [
+          { label: "No", value: "no" },
+          { label: "Yes / Possibly", value: "yes", redFlag: "Pregnant patients with UTI require medical management. Refer to physician." },
+          { label: "Unsure — patient cannot confirm", value: "unsure", redFlag: "Pregnancy status cannot be confirmed. Refer to physician for assessment." },
+        ],
+      },
+      {
+        id: "symptoms",
+        type: "multiselect",
+        section: "Symptoms",
+        question: "Which symptoms is the patient reporting? (select all that apply)",
+        help: "At least one classic symptom (dysuria, frequency, urgency, suprapubic pain) should be present.",
+        options: [
+          { label: "Dysuria (painful urination)", value: "dysuria" },
+          { label: "Frequency", value: "frequency" },
+          { label: "Urgency", value: "urgency" },
+          { label: "Suprapubic pain or pressure", value: "suprapubic" },
+          { label: "Visible blood in urine", value: "hematuria" },
+        ],
+        validate: (v) => {
+          const classic = ["dysuria","frequency","urgency","suprapubic"];
+          const hasClassic = v.some(x => classic.includes(x));
+          if (!hasClassic) return { redFlag: "No classic UTI symptoms reported. Reassess or refer to physician." };
+          return null;
+        },
+      },
+      {
+        id: "duration",
+        type: "question",
+        section: "Symptoms",
+        question: "How long has the patient had symptoms?",
+        options: [
+          { label: "Less than 7 days", value: "lt7" },
+          { label: "7 days or longer", value: "ge7", redFlag: "Symptoms ≥7 days suggest possible complicated infection. Refer to physician." },
+        ],
+      },
+      {
+        id: "red_flags",
+        type: "multiselect",
+        section: "Red flags",
+        question: "Are any of the following present?",
+        help: "Each of these suggests possible upper UTI (pyelonephritis) or complicated infection.",
+        options: [
+          { label: "Fever (>38°C) or chills", value: "fever" },
+          { label: "Flank pain or back pain", value: "flank" },
+          { label: "Nausea or vomiting", value: "nausea" },
+          { label: "Vaginal discharge or irritation", value: "discharge" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("fever") || v.includes("flank") || v.includes("nausea")) {
+            return { redFlag: "Signs of pyelonephritis or complicated infection (fever, flank pain, or systemic symptoms). Refer to physician immediately." };
+          }
+          if (v.includes("discharge")) {
+            return { redFlag: "Vaginal discharge may indicate alternative diagnosis (vaginitis, STI). Refer to physician." };
+          }
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      {
+        id: "recurrence",
+        type: "question",
+        section: "History",
+        question: "How many UTIs has the patient had recently?",
+        help: "Recurrent UTI = ≥2 episodes in 6 months OR ≥3 in 12 months.",
+        options: [
+          { label: "First UTI in over a year", value: "first" },
+          { label: "1–2 UTIs in past year (not recent)", value: "infrequent" },
+          { label: "≥2 in past 6 months OR ≥3 in past year", value: "recurrent", redFlag: "Recurrent UTI requires medical workup. Refer to physician." },
+          { label: "Currently treated for UTI in last 4 weeks", value: "recent_treated", redFlag: "Recent failed treatment suggests resistance or complicated infection. Refer to physician." },
+        ],
+      },
+      {
+        id: "complicating",
+        type: "multiselect",
+        section: "History",
+        question: "Any of the following in the patient's history?",
+        options: [
+          { label: "Diabetes", value: "diabetes", redFlag: "Diabetes increases risk of complicated UTI. Clinical judgment required — consider referral." },
+          { label: "Immunocompromise (chemo, immunosuppressants, HIV)", value: "immuno", redFlag: "Immunocompromised patients should be assessed by a physician." },
+          { label: "Indwelling catheter", value: "catheter", redFlag: "Catheter-associated UTI is complicated. Refer to physician." },
+          { label: "Known urinary tract abnormality or kidney disease", value: "structural", redFlag: "Refer to physician for assessment of underlying condition." },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.length === 0) return "Select 'None of the above' if none apply.";
+          return null;
+        },
+      },
+      {
+        id: "allergies",
+        type: "input",
+        section: "Medications",
+        question: "Patient drug allergies?",
+        help: "List any known drug allergies, especially sulfa, nitrofurantoin, beta-lactams. Type 'NKDA' if none.",
+        inputType: "text",
+        placeholder: "e.g., NKDA, or sulfa rash",
+      },
+      {
+        id: "current_meds",
+        type: "input",
+        section: "Medications",
+        question: "Current medications (especially relevant to interactions)?",
+        help: "Note warfarin, methotrexate, phenytoin, or any antibiotic in last 4 weeks.",
+        inputType: "textarea",
+        placeholder: "e.g., metformin, lisinopril",
+      },
+    ],
+    drugs: [
+      {
+        id: "nitrofurantoin",
+        name: "Nitrofurantoin (macrocrystals/monohydrate)",
+        brand: "Macrobid",
+        dose: "100 mg PO BID",
+        duration: "5 days",
+        notes: "First-line for most patients. Take with food. Avoid if CrCl <30 mL/min.",
+        contraindications: "G6PD deficiency, late pregnancy, severe renal impairment.",
+      },
+      {
+        id: "tmp_smx",
+        name: "Trimethoprim/Sulfamethoxazole",
+        brand: "Septra DS / Bactrim DS",
+        dose: "1 DS tab (160/800 mg) PO BID",
+        duration: "3 days",
+        notes: "Avoid if local E. coli resistance >20%. Watch for sulfa allergy and warfarin interaction.",
+        contraindications: "Sulfa allergy, pregnancy, severe renal/hepatic impairment.",
+      },
+      {
+        id: "fosfomycin",
+        name: "Fosfomycin tromethamine",
+        brand: "Monurol",
+        dose: "3 g PO",
+        duration: "Single dose",
+        notes: "Convenient single-dose option. Take on empty stomach, dissolve in cold water.",
+        contraindications: "Severe renal impairment.",
+      },
+      {
+        id: "trimethoprim",
+        name: "Trimethoprim alone",
+        brand: "—",
+        dose: "200 mg PO BID",
+        duration: "3 days",
+        notes: "Alternative when sulfa is contraindicated.",
+        contraindications: "Pregnancy (first trimester), severe folate deficiency.",
+      },
+    ],
+    counsellingPoints: [
+      "Drink plenty of water throughout the day.",
+      "Take the full course even if symptoms improve early.",
+      "Symptoms should improve within 48 hours of starting treatment.",
+      "Return to the pharmacy or see a doctor if symptoms worsen, you develop fever or back pain, or symptoms haven't improved in 48–72 hours.",
+      "Avoid sexual activity until symptoms resolve.",
+      "Wipe front to back; urinate after intercourse.",
+    ],
+  },
+
+  rhinitis: {
+    id: "rhinitis",
+    name: "Allergic Rhinitis",
+    short: "Allergic rhinitis",
+    description: "Hay fever — seasonal or perennial allergic rhinitis.",
+    citation: "Adapted from OCP/CPhA — verify before clinical use",
+    estimatedTime: "2–3 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Allergic Rhinitis Assessment", body: "Assesses suitability for treating allergic rhinitis. The tool documents the assessment — the pharmacist makes the clinical decision." },
+      {
+        id: "symptoms", type: "multiselect", section: "Symptoms",
+        question: "Which symptoms is the patient reporting?",
+        help: "At least one classic AR symptom should be present.",
+        options: [
+          { label: "Runny nose / clear discharge", value: "rhinorrhea" },
+          { label: "Sneezing", value: "sneezing" },
+          { label: "Nasal congestion", value: "congestion" },
+          { label: "Itchy nose, eyes, or throat", value: "itch" },
+          { label: "Watery eyes", value: "watery_eyes" },
+        ],
+        validate: (v) => v.length === 0 ? { redFlag: "No allergic rhinitis symptoms reported. Reassess." } : null,
+      },
+      {
+        id: "pattern", type: "question", section: "History",
+        question: "What is the symptom pattern?",
+        options: [
+          { label: "Seasonal (pollen, ragweed)", value: "seasonal" },
+          { label: "Perennial (dust, pets, mould)", value: "perennial" },
+          { label: "Episodic — specific triggers", value: "episodic" },
+          { label: "Sudden new onset, no allergic history", value: "sudden", redFlag: "Sudden new-onset rhinitis without allergic history may be viral or other cause. Reassess or refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of the following present?",
+        options: [
+          { label: "Unilateral symptoms (one side only)", value: "unilateral" },
+          { label: "Facial pain or pressure", value: "facial_pain" },
+          { label: "Thick yellow or green discharge", value: "purulent" },
+          { label: "Fever", value: "fever" },
+          { label: "Severe headache", value: "headache" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("unilateral")) return { redFlag: "Unilateral symptoms may indicate foreign body, polyp, or tumour. Refer." };
+          if (v.includes("facial_pain") || v.includes("purulent") || v.includes("fever")) return { redFlag: "Signs suggest sinusitis or bacterial infection. Refer." };
+          if (v.includes("headache")) return { redFlag: "Severe headache requires medical assessment. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Patient drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "fluticasone", name: "Fluticasone propionate nasal spray", brand: "Flonase", dose: "2 sprays each nostril daily", duration: "Up to 6 months as needed", notes: "First-line for moderate-severe. Full effect in 1–2 weeks.", contraindications: "Recent nasal surgery, untreated nasal infection." },
+      { id: "mometasone", name: "Mometasone furoate nasal spray", brand: "Nasonex", dose: "2 sprays each nostril daily", duration: "Up to 6 months as needed", notes: "Once-daily dosing.", contraindications: "Recent nasal surgery, untreated infection." },
+      { id: "cetirizine", name: "Cetirizine", brand: "Reactine", dose: "10 mg PO daily", duration: "Symptom season", notes: "Non-sedating. Mild drowsiness possible.", contraindications: "Severe renal impairment." },
+      { id: "loratadine", name: "Loratadine", brand: "Claritin", dose: "10 mg PO daily", duration: "Symptom season", notes: "Non-sedating.", contraindications: "Severe hepatic impairment." },
+      { id: "fexofenadine", name: "Fexofenadine", brand: "Allegra", dose: "120 mg PO daily", duration: "Symptom season", notes: "Least sedating. Avoid with fruit juice.", contraindications: "Severe renal impairment." },
+    ],
+    counsellingPoints: [
+      "Use daily during your allergy season for best effect — not just when symptoms flare.",
+      "Nasal sprays may take 1–2 weeks to work fully. Don't stop early.",
+      "Identify and avoid triggers where possible (pollen, dust, pet dander).",
+      "Shower after being outside on high pollen days; keep windows closed.",
+      "See a doctor if symptoms persist beyond 4 weeks despite treatment, or if you develop facial pain, fever, or thick discharge.",
+    ],
+  },
+
+  conjunctivitis: {
+    id: "conjunctivitis",
+    name: "Conjunctivitis",
+    short: "Conjunctivitis",
+    description: "Bacterial, allergic, or viral pink eye.",
+    citation: "Adapted from OCP/CPhA — verify before clinical use",
+    estimatedTime: "3 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Conjunctivitis Assessment", body: "Determines whether the presentation is bacterial, allergic, or viral, and whether it's safe to manage in pharmacy. Ophthalmic fluoroquinolones are excluded from minor ailments scope." },
+      {
+        id: "type", type: "question", section: "Presentation",
+        question: "Which best describes the eye?",
+        options: [
+          { label: "Red eye + thick yellow/green discharge, eyelids stuck shut", value: "bacterial" },
+          { label: "Both eyes itchy + watery, no discharge crust", value: "allergic" },
+          { label: "Red eye + watery clear discharge, recent cold", value: "viral" },
+          { label: "Doesn't fit any pattern", value: "unclear", redFlag: "Atypical presentation requires examination. Refer." },
+        ],
+      },
+      {
+        id: "laterality", type: "question", section: "Presentation",
+        question: "One eye or both?",
+        options: [
+          { label: "Both eyes", value: "bilateral" },
+          { label: "One eye only", value: "unilateral" },
+          { label: "Started in one, spread to both", value: "spread" },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of the following present?",
+        options: [
+          { label: "Vision changes (blurring, loss)", value: "vision" },
+          { label: "Severe pain (not just irritation)", value: "pain" },
+          { label: "Sensitivity to light", value: "photophobia" },
+          { label: "Contact lens wearer with current symptoms", value: "contacts" },
+          { label: "Recent eye trauma or foreign body", value: "trauma" },
+          { label: "Vesicles around the eye (cold-sore-like)", value: "herpetic" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("vision") || v.includes("pain") || v.includes("photophobia")) return { redFlag: "Vision changes, severe pain, or photophobia suggest serious ocular pathology. Refer urgently." };
+          if (v.includes("contacts")) return { redFlag: "Contact lens wearers with eye symptoms have higher risk of microbial keratitis. Refer." };
+          if (v.includes("trauma")) return { redFlag: "Recent trauma or foreign body requires examination. Refer." };
+          if (v.includes("herpetic")) return { redFlag: "Possible herpetic keratitis. Refer urgently." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      {
+        id: "duration", type: "question", section: "History",
+        question: "How long has it been going on?",
+        options: [
+          { label: "Less than 1 week", value: "lt1w" },
+          { label: "1–2 weeks", value: "1to2w" },
+          { label: "More than 2 weeks", value: "gt2w", redFlag: "Symptoms >2 weeks suggest other diagnosis or treatment failure. Refer." },
+        ],
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug or topical eye-drop allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "polymyxin_tmp", name: "Polymyxin B + Trimethoprim ophthalmic drops", brand: "Polysporin Eye/Ear", dose: "1–2 drops each affected eye Q4–6H", duration: "7 days", notes: "First-line for bacterial conjunctivitis.", contraindications: "Allergy to either component." },
+      { id: "erythromycin_oint", name: "Erythromycin ophthalmic ointment 0.5%", brand: "—", dose: "Apply to affected eye QID", duration: "5–7 days", notes: "Useful for children; ointment may blur vision briefly.", contraindications: "Macrolide allergy." },
+      { id: "olopatadine", name: "Olopatadine ophthalmic drops 0.1%", brand: "Patanol", dose: "1 drop each eye BID", duration: "Symptom duration (allergic)", notes: "First-line for allergic conjunctivitis.", contraindications: "Hypersensitivity." },
+      { id: "ketotifen", name: "Ketotifen ophthalmic drops 0.025%", brand: "Zaditor", dose: "1 drop each eye BID–TID", duration: "Symptom duration (allergic)", notes: "OTC option for allergic.", contraindications: "Hypersensitivity." },
+    ],
+    counsellingPoints: [
+      "Wash hands before and after applying drops or ointment. Don't share towels.",
+      "Don't wear contacts until 24 hours after symptoms fully resolve.",
+      "Discard any eye makeup used during the infection.",
+      "Bacterial conjunctivitis usually improves in 2–3 days with treatment; complete the course.",
+      "Return if symptoms worsen, vision changes, severe pain develops, or no improvement in 5–7 days.",
+    ],
+  },
+
+  thrush: {
+    id: "thrush",
+    name: "Oral Thrush (Candidal Stomatitis)",
+    short: "Oral thrush",
+    description: "White patches on tongue, palate, or oral mucosa.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Oral Thrush Assessment", body: "Confirms a presentation suitable for topical antifungal treatment in pharmacy. Immunocompromised patients are out of scope." },
+      {
+        id: "appearance", type: "question", section: "Presentation",
+        question: "What does the patient's mouth show?",
+        options: [
+          { label: "White patches on tongue/palate that wipe off (red beneath)", value: "classic" },
+          { label: "White patches that DON'T wipe off", value: "leukoplakia", redFlag: "Lesions that don't scrape off may not be candida. Refer for assessment." },
+          { label: "Red sore mouth without white patches", value: "atrophic" },
+          { label: "Other / unclear", value: "unclear", redFlag: "Atypical presentation. Refer." },
+        ],
+      },
+      {
+        id: "risk_factors", type: "multiselect", section: "Risk factors",
+        question: "Any of these apply to the patient?",
+        options: [
+          { label: "Recently took antibiotics", value: "antibiotics" },
+          { label: "Uses inhaled corticosteroid", value: "ics" },
+          { label: "Wears dentures", value: "dentures" },
+          { label: "Dry mouth", value: "xerostomia" },
+          { label: "Diabetic", value: "diabetic" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => v.length === 0 ? "Select 'None of the above' if none apply." : null,
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Immunocompromised (chemo, HIV, transplant, immunosuppressants)", value: "immuno" },
+          { label: "Severe pain swallowing or chest pain when eating", value: "esophageal" },
+          { label: "Fever", value: "fever" },
+          { label: "Infant <4 months old", value: "infant" },
+          { label: "Recurrent thrush despite treatment", value: "recurrent" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("immuno")) return { redFlag: "Immunocompromised patients require physician assessment." };
+          if (v.includes("esophageal")) return { redFlag: "Symptoms suggest esophageal candidiasis. Refer urgently." };
+          if (v.includes("fever")) return { redFlag: "Fever suggests systemic involvement. Refer." };
+          if (v.includes("infant")) return { redFlag: "Young infants should be assessed by physician." };
+          if (v.includes("recurrent")) return { redFlag: "Recurrent thrush warrants workup. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Patient drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "nystatin", name: "Nystatin oral suspension 100,000 units/mL", brand: "Mycostatin", dose: "4–6 mL QID, swish and swallow", duration: "7–14 days, continue 48h after symptoms resolve", notes: "First-line. Hold in mouth as long as possible before swallowing.", contraindications: "Hypersensitivity." },
+      { id: "miconazole_gel", name: "Miconazole oral gel 2%", brand: "Daktarin", dose: "Apply 2.5 mL QID after meals", duration: "7 days, continue 48h after resolution", notes: "Apply to lesions; hold in mouth.", contraindications: "Warfarin (interaction), hepatic impairment." },
+      { id: "clotrimazole_troche", name: "Clotrimazole troches 10 mg", brand: "Mycelex", dose: "1 troche dissolved slowly 5× daily", duration: "14 days", notes: "Let dissolve fully — don't chew.", contraindications: "Children unable to use troches safely." },
+    ],
+    counsellingPoints: [
+      "If using inhaled corticosteroid: rinse and spit after every puff to prevent recurrence.",
+      "Clean dentures daily and remove them at night; soak in chlorhexidine if recommended.",
+      "Continue medication for 48 hours after symptoms disappear to prevent return.",
+      "Avoid sugary foods/drinks during treatment — they feed yeast.",
+      "Return if symptoms haven't improved in 7 days, if swallowing becomes painful, or if you develop fever.",
+    ],
+  },
+
+  dermatitis: {
+    id: "dermatitis",
+    name: "Dermatitis (Atopic / Contact / Allergic)",
+    short: "Dermatitis",
+    description: "Eczema, contact dermatitis, allergic skin reactions.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "3 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Dermatitis Assessment", body: "Atopic eczema, contact dermatitis, and allergic dermatitis are within scope. High-potency topical corticosteroids are excluded from Schedule 4." },
+      {
+        id: "type", type: "question", section: "Presentation",
+        question: "What best describes it?",
+        options: [
+          { label: "Chronic itchy patches, history of eczema", value: "atopic" },
+          { label: "Recent contact with irritant (poison ivy, nickel, soap)", value: "contact" },
+          { label: "Sudden allergic reaction to known allergen", value: "allergic" },
+          { label: "Other / unclear", value: "unclear", redFlag: "Atypical or unclear rash. Refer for diagnosis." },
+        ],
+      },
+      {
+        id: "severity", type: "question", section: "Severity",
+        question: "How extensive is the rash?",
+        options: [
+          { label: "Mild — small patches, mild itch", value: "mild" },
+          { label: "Moderate — multiple areas, bothersome", value: "moderate" },
+          { label: "Severe — widespread, intense itch, sleep disruption", value: "severe", redFlag: "Severe widespread dermatitis requires physician assessment. Refer." },
+        ],
+      },
+      {
+        id: "location", type: "multiselect", section: "Location",
+        question: "Where on the body? (select all)",
+        options: [
+          { label: "Arms or legs", value: "limbs" },
+          { label: "Trunk (chest, back, abdomen)", value: "trunk" },
+          { label: "Face (excluding around eyes)", value: "face" },
+          { label: "Around eyes / eyelids", value: "eyes" },
+          { label: "Genital area", value: "genital" },
+          { label: "Hands or feet", value: "extremities" },
+        ],
+        validate: (v) => {
+          if (v.includes("eyes")) return { redFlag: "Periocular dermatitis requires physician assessment — high-potency steroids unsafe near eyes." };
+          if (v.includes("genital")) return { redFlag: "Genital dermatitis warrants physician examination. Refer." };
+          if (v.length === 0) return "Select at least one location.";
+          return null;
+        },
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Oozing, weeping, or crusted (signs of infection)", value: "infected" },
+          { label: "Fever or feeling unwell", value: "fever" },
+          { label: "Immunocompromised", value: "immuno" },
+          { label: "No improvement after 1–2 weeks of OTC treatment", value: "refractory" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("infected") || v.includes("fever")) return { redFlag: "Signs of skin infection. Refer for assessment and possible antibiotics." };
+          if (v.includes("immuno")) return { redFlag: "Immunocompromised patients should be assessed by physician." };
+          if (v.includes("refractory")) return { redFlag: "Failure of OTC therapy warrants reassessment. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Patient drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "hydrocortisone1", name: "Hydrocortisone 1% cream/ointment", brand: "—", dose: "Apply thin layer BID to affected area", duration: "7–14 days", notes: "Low-potency. Safe for most areas including face (short course).", contraindications: "Skin infection, broken skin." },
+      { id: "desonide", name: "Desonide 0.05% cream", brand: "—", dose: "Apply thin layer BID", duration: "7–14 days", notes: "Low-potency option for face/skinfolds.", contraindications: "Skin infection." },
+      { id: "betamethasone_v", name: "Betamethasone valerate 0.05% cream/ointment", brand: "Betaderm", dose: "Apply thin layer BID", duration: "7–14 days", notes: "Mid-potency. Avoid face and skinfolds.", contraindications: "Skin infection, broken skin, face." },
+      { id: "mometasone_topical", name: "Mometasone furoate 0.1% cream", brand: "Elocom", dose: "Apply thin layer once daily", duration: "7–14 days", notes: "Mid-potency, once-daily.", contraindications: "Skin infection, face/skinfolds." },
+    ],
+    counsellingPoints: [
+      "Apply a thin layer — more isn't better, and increases side effects.",
+      "Don't use the steroid for more than 2 weeks at a time without reassessment.",
+      "Use a fragrance-free emollient (cream/ointment) several times daily as a base.",
+      "Avoid known triggers — fragranced soaps, wool, harsh detergents.",
+      "Return if the rash spreads, becomes infected (oozing, crusting), or doesn't improve in 2 weeks.",
+    ],
+  },
+
+  diaper: {
+    id: "diaper",
+    name: "Diaper Dermatitis",
+    short: "Diaper rash",
+    description: "Irritant or candidal diaper rash in infants/toddlers.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Diaper Rash Assessment", body: "Most diaper rashes respond to barrier care. Identify whether candidal involvement is likely and rule out red flags." },
+      {
+        id: "appearance", type: "question", section: "Presentation",
+        question: "What does the rash look like?",
+        options: [
+          { label: "Pink/red, flat, in folds and contact areas (irritant)", value: "irritant" },
+          { label: "Beefy red with satellite spots, in skinfolds (candidal)", value: "candidal" },
+          { label: "Pustules, blisters, or weeping", value: "infected", redFlag: "Pustules/blisters/weeping suggest bacterial infection. Refer." },
+          { label: "Bloody or eroded", value: "severe", redFlag: "Bleeding or erosion requires medical assessment. Refer." },
+        ],
+      },
+      {
+        id: "duration", type: "question", section: "History",
+        question: "How long has it been there?",
+        options: [
+          { label: "Less than 3 days", value: "lt3" },
+          { label: "3–7 days", value: "3to7" },
+          { label: "More than 7 days despite barrier care", value: "gt7", redFlag: "Persistent rash despite barrier care needs assessment. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Fever or unwell child", value: "fever" },
+          { label: "Spreading beyond diaper area", value: "spreading" },
+          { label: "Child not feeding well", value: "feeding" },
+          { label: "Immunocompromised child", value: "immuno" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("fever") || v.includes("feeding")) return { redFlag: "Systemic symptoms in young child require medical assessment. Refer." };
+          if (v.includes("spreading")) return { redFlag: "Rash spreading beyond diaper area suggests broader process. Refer." };
+          if (v.includes("immuno")) return { redFlag: "Immunocompromised child should be assessed by physician." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+    ],
+    drugs: [
+      { id: "zinc_oxide", name: "Zinc oxide ointment", brand: "Penaten / Zincofax", dose: "Apply generously at every diaper change", duration: "Until resolved + as ongoing prevention", notes: "First-line for irritant diaper rash. Forms a barrier.", contraindications: "Hypersensitivity." },
+      { id: "clotrimazole_topical", name: "Clotrimazole 1% cream", brand: "Canesten", dose: "Apply thin layer BID", duration: "7 days", notes: "For suspected candidal involvement.", contraindications: "Hypersensitivity." },
+      { id: "hydrocortisone_diaper", name: "Hydrocortisone 1% cream", brand: "—", dose: "Apply thin layer BID", duration: "Maximum 5–7 days", notes: "For severe inflammation; short course only.", contraindications: "Infection, broken skin." },
+    ],
+    counsellingPoints: [
+      "Change diapers frequently — every 2–3 hours and immediately after stool.",
+      "Allow diaper-free time daily so the area can air-dry.",
+      "Clean gently with warm water and a soft cloth; avoid baby wipes during flares (use water).",
+      "Apply a thick layer of zinc oxide barrier cream at every change.",
+      "See a doctor if the rash spreads, blisters, oozes, or doesn't improve in 7 days.",
+    ],
+  },
+
+  dysmenorrhea: {
+    id: "dysmenorrhea",
+    name: "Dysmenorrhea (Period Pain)",
+    short: "Dysmenorrhea",
+    description: "Primary dysmenorrhea — cyclical menstrual cramping.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Dysmenorrhea Assessment", body: "Treats primary dysmenorrhea (cyclical pain with menses). Pain outside the menstrual cycle, sudden severe pain, or abnormal bleeding requires referral." },
+      {
+        id: "pattern", type: "question", section: "Pattern",
+        question: "What's the pain pattern?",
+        options: [
+          { label: "Cramping, starts with period, lasts 1–3 days", value: "primary" },
+          { label: "Started recently with first periods", value: "menarche" },
+          { label: "Pain throughout cycle, not just with periods", value: "throughout", redFlag: "Pain not tied to menses suggests other cause (endometriosis, ovarian, GI). Refer." },
+          { label: "Sudden very severe pain, new pattern", value: "severe", redFlag: "Sudden severe pelvic pain requires urgent assessment. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Abnormal vaginal bleeding (heavy, between periods)", value: "bleeding" },
+          { label: "Possibly pregnant", value: "pregnant" },
+          { label: "Fever or unwell", value: "fever" },
+          { label: "IUD recently inserted", value: "iud" },
+          { label: "Pain worsening over recent cycles", value: "worsening" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("bleeding")) return { redFlag: "Abnormal bleeding requires evaluation. Refer." };
+          if (v.includes("pregnant")) return { redFlag: "Possible pregnancy — NSAIDs may be contraindicated. Refer." };
+          if (v.includes("fever")) return { redFlag: "Fever with pelvic pain may indicate PID. Refer urgently." };
+          if (v.includes("iud")) return { redFlag: "Recent IUD insertion warrants physician follow-up. Refer." };
+          if (v.includes("worsening")) return { redFlag: "Progressive worsening suggests secondary cause (endometriosis). Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Allergies, especially NSAIDs / aspirin?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "ibuprofen", name: "Ibuprofen", brand: "Advil / Motrin", dose: "400–600 mg PO Q6H", duration: "First 1–3 days of period", notes: "Start at first sign of pain; take with food.", contraindications: "Active GI ulcer, severe renal impairment, third-trimester pregnancy, NSAID allergy." },
+      { id: "naproxen", name: "Naproxen sodium", brand: "Aleve", dose: "440 mg loading then 220 mg Q8–12H", duration: "First 1–3 days of period", notes: "Longer-acting; good for nighttime cramps.", contraindications: "GI ulcer, renal impairment, third trimester, NSAID allergy." },
+      { id: "mefenamic", name: "Mefenamic acid", brand: "Ponstan", dose: "500 mg loading then 250 mg Q6H", duration: "Maximum 3 days per cycle", notes: "Often more effective for dysmenorrhea than ibuprofen.", contraindications: "GI ulcer, renal impairment, NSAID allergy." },
+    ],
+    counsellingPoints: [
+      "Start the medication at the first sign of pain or even just before your period starts — don't wait.",
+      "Take with food to reduce stomach upset.",
+      "Heat (heating pad, warm bath) helps a lot — combine with medication.",
+      "Light exercise and gentle stretching can reduce cramping.",
+      "See a doctor if pain becomes severe, lasts beyond your period, or doesn't respond to treatment.",
+    ],
+  },
+
+  gerd: {
+    id: "gerd",
+    name: "GERD / Heartburn",
+    short: "Heartburn",
+    description: "Mild to moderate heartburn or acid reflux.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2–3 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "GERD Assessment", body: "For mild-moderate heartburn lasting less than 4 weeks. Alarm symptoms require referral." },
+      {
+        id: "symptoms", type: "multiselect", section: "Symptoms",
+        question: "What symptoms is the patient reporting?",
+        options: [
+          { label: "Burning behind breastbone (heartburn)", value: "heartburn" },
+          { label: "Acid taste in mouth / regurgitation", value: "regurg" },
+          { label: "Worse after meals or lying down", value: "positional" },
+          { label: "Burping / belching", value: "burping" },
+          { label: "Persistent cough or hoarseness", value: "cough" },
+        ],
+        validate: (v) => v.length === 0 ? { redFlag: "No reflux symptoms reported. Reassess." } : null,
+      },
+      {
+        id: "duration", type: "question", section: "History",
+        question: "How long?",
+        options: [
+          { label: "Less than 2 weeks, occasional", value: "lt2w" },
+          { label: "2–4 weeks", value: "2to4w" },
+          { label: "More than 4 weeks of persistent symptoms", value: "gt4w", redFlag: "Symptoms beyond 4 weeks warrant physician assessment for possible GERD/Barrett's workup." },
+        ],
+      },
+      {
+        id: "alarm", type: "multiselect", section: "Alarm symptoms",
+        question: "Any alarm symptoms?",
+        help: "These suggest more serious pathology and require referral.",
+        options: [
+          { label: "Difficulty or painful swallowing", value: "dysphagia" },
+          { label: "Unintentional weight loss", value: "weight_loss" },
+          { label: "Vomiting blood or coffee-ground material", value: "hematemesis" },
+          { label: "Black or tarry stools", value: "melena" },
+          { label: "Persistent vomiting", value: "vomiting" },
+          { label: "Anemia or feeling unusually tired/short of breath", value: "anemia" },
+          { label: "Age >50 with new-onset symptoms", value: "age50" },
+          { label: "Family history of stomach/esophageal cancer", value: "fhx" },
+          { label: "Chest pain that could be cardiac", value: "chest_pain" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          const alarms = ["dysphagia","weight_loss","hematemesis","melena","vomiting","anemia","age50","fhx"];
+          if (alarms.some(a => v.includes(a))) return { redFlag: "Alarm symptom present. Refer for endoscopic evaluation." };
+          if (v.includes("chest_pain")) return { redFlag: "Possible cardiac chest pain. Refer urgently — call 911 if acute." };
+          if (v.length === 0) return "Select 'None of the above' if no alarms are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "famotidine", name: "Famotidine", brand: "Pepcid", dose: "20 mg PO BID", duration: "14 days", notes: "H2-receptor antagonist. Faster onset than PPI.", contraindications: "Severe renal impairment (dose adjustment)." },
+      { id: "omeprazole", name: "Omeprazole", brand: "Losec", dose: "20 mg PO daily before breakfast", duration: "14 days", notes: "First-line PPI. Take 30–60 min before meals.", contraindications: "Hypersensitivity." },
+      { id: "pantoprazole", name: "Pantoprazole", brand: "Pantoloc", dose: "40 mg PO daily", duration: "14 days", notes: "Fewer drug interactions than omeprazole.", contraindications: "Hypersensitivity." },
+      { id: "esomeprazole", name: "Esomeprazole", brand: "Nexium", dose: "20 mg PO daily", duration: "14 days", notes: "PPI option.", contraindications: "Hypersensitivity." },
+    ],
+    counsellingPoints: [
+      "Take PPIs 30–60 minutes before your first meal of the day.",
+      "Don't lie down for 2–3 hours after eating; raise the head of your bed if needed.",
+      "Avoid trigger foods: spicy, fatty, chocolate, mint, citrus, coffee, alcohol.",
+      "If using OTC PPIs, the recommended max is 14 days at a time. See a doctor if symptoms persist.",
+      "Return immediately if you have trouble swallowing, vomit blood, see black stools, or lose weight unintentionally.",
+    ],
+  },
+
+  hemorrhoids: {
+    id: "hemorrhoids",
+    name: "Hemorrhoids",
+    short: "Hemorrhoids",
+    description: "Mild external or internal hemorrhoids.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Hemorrhoids Assessment", body: "Mild hemorrhoids respond to topical treatment and lifestyle changes. Significant bleeding or severe pain requires referral." },
+      {
+        id: "symptoms", type: "multiselect", section: "Symptoms",
+        question: "What is the patient experiencing?",
+        options: [
+          { label: "Itching or irritation around anus", value: "itch" },
+          { label: "Mild bleeding with bowel movement (bright red on tissue)", value: "mild_bleed" },
+          { label: "Mild discomfort or dull ache", value: "ache" },
+          { label: "Lump or swelling around anus", value: "lump" },
+        ],
+        validate: (v) => v.length === 0 ? { redFlag: "No hemorrhoid symptoms reported. Reassess." } : null,
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Heavy bleeding (filling toilet bowl)", value: "heavy_bleed" },
+          { label: "Severe sudden pain (possible thrombosis)", value: "severe_pain" },
+          { label: "Change in bowel habits or stool calibre", value: "bowel_change" },
+          { label: "Black, tarry, or maroon stools", value: "melena" },
+          { label: "Age >50 with new bleeding", value: "age50" },
+          { label: "Anemia or fatigue", value: "anemia" },
+          { label: "Pregnancy", value: "pregnancy" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("heavy_bleed") || v.includes("anemia")) return { redFlag: "Significant bleeding requires evaluation. Refer." };
+          if (v.includes("severe_pain")) return { redFlag: "Severe pain may indicate thrombosed hemorrhoid or other pathology. Refer." };
+          if (v.includes("bowel_change") || v.includes("melena") || v.includes("age50")) return { redFlag: "Symptoms could indicate other GI pathology including malignancy. Refer for evaluation." };
+          if (v.includes("pregnancy")) return { redFlag: "Pregnancy — many topical products contraindicated. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "hydrocortisone_supp", name: "Hydrocortisone 1% cream/ointment", brand: "—", dose: "Apply BID externally; or 1 suppository BID", duration: "Maximum 7 days", notes: "Reduces inflammation and itch.", contraindications: "Active anal infection." },
+      { id: "pramoxine_zinc", name: "Pramoxine + Zinc oxide", brand: "Anusol Plus", dose: "Apply or insert BID–QID", duration: "7 days", notes: "Local anesthetic + barrier.", contraindications: "Hypersensitivity." },
+      { id: "phenylephrine", name: "Phenylephrine 0.25% topical", brand: "Preparation H", dose: "Apply up to QID", duration: "7 days", notes: "Vasoconstrictor reduces swelling.", contraindications: "Hypertension, MAOI use, BPH." },
+      { id: "lidocaine_oint", name: "Lidocaine 5% ointment", brand: "Xylocaine", dose: "Apply up to QID", duration: "5–7 days", notes: "For pain relief.", contraindications: "Lidocaine allergy." },
+    ],
+    counsellingPoints: [
+      "Increase fibre and water intake to soften stools — this is the most important change.",
+      "Don't strain or sit on the toilet for long periods.",
+      "A warm sitz bath (10–15 minutes, 2–3 times daily) provides significant relief.",
+      "Use moist wipes or rinse instead of dry tissue while symptomatic.",
+      "Return if you have heavy bleeding, severe pain, no improvement in 7 days, or any change in bowel habits.",
+    ],
+  },
+
+  cold_sores: {
+    id: "cold_sores",
+    name: "Cold Sores (Herpes Labialis)",
+    short: "Cold sores",
+    description: "Recurrent oral herpes simplex on lips/perioral area.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Cold Sore Assessment", body: "Treatment is most effective when started at first symptoms (tingling/burning prodrome). Topical antivirals provide modest benefit; oral antivirals are more effective." },
+      {
+        id: "stage", type: "question", section: "Stage",
+        question: "What stage is the cold sore at?",
+        options: [
+          { label: "Tingling, burning — no visible sore yet (prodrome)", value: "prodrome" },
+          { label: "Small blisters/vesicles formed", value: "vesicle" },
+          { label: "Open ulcer or weeping", value: "ulcer" },
+          { label: "Crusted / scabbing", value: "crusted" },
+        ],
+      },
+      {
+        id: "duration", type: "question", section: "Timing",
+        question: "How long since first symptoms started?",
+        options: [
+          { label: "Less than 24 hours", value: "lt24" },
+          { label: "1–3 days", value: "1to3d" },
+          { label: "More than 3 days", value: "gt3d" },
+        ],
+      },
+      {
+        id: "frequency", type: "question", section: "History",
+        question: "How often does the patient get cold sores?",
+        options: [
+          { label: "First time", value: "first" },
+          { label: "Occasional (1–3 per year)", value: "occasional" },
+          { label: "Frequent (4–6 per year)", value: "frequent" },
+          { label: "Very frequent (>6 per year)", value: "very_frequent", redFlag: "Frequent recurrences may benefit from chronic suppression therapy. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Immunocompromised", value: "immuno" },
+          { label: "Lesions near eye / eye involvement", value: "eye" },
+          { label: "Severe or widespread lesions", value: "severe" },
+          { label: "Atypical appearance", value: "atypical" },
+          { label: "Signs of secondary bacterial infection", value: "infected" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("immuno")) return { redFlag: "Immunocompromised patients need physician care. Refer." };
+          if (v.includes("eye")) return { redFlag: "Eye involvement (ocular HSV) is sight-threatening. Refer urgently." };
+          if (v.includes("severe") || v.includes("infected")) return { redFlag: "Severe or infected lesions require physician care. Refer." };
+          if (v.includes("atypical")) return { redFlag: "Atypical presentation. Refer for diagnosis." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "acyclovir_topical", name: "Acyclovir 5% cream", brand: "Zovirax", dose: "Apply 5× daily", duration: "4 days", notes: "Modest benefit; works best if started in prodrome.", contraindications: "Hypersensitivity." },
+      { id: "penciclovir", name: "Penciclovir 1% cream", brand: "Denavir", dose: "Apply Q2H while awake", duration: "4 days", notes: "Slightly faster healing than acyclovir cream.", contraindications: "Hypersensitivity." },
+      { id: "acyclovir_oral", name: "Acyclovir oral", brand: "Zovirax", dose: "400 mg PO 5× daily", duration: "5 days", notes: "Oral antivirals more effective. Start within 72h.", contraindications: "Severe renal impairment (dose adjust)." },
+      { id: "valacyclovir", name: "Valacyclovir oral", brand: "Valtrex", dose: "2 g PO BID", duration: "1 day (single-day regimen)", notes: "Convenient single-day course. Start at first sign.", contraindications: "Severe renal impairment." },
+    ],
+    counsellingPoints: [
+      "Start treatment at the first tingling sensation — don't wait for the blister.",
+      "Don't pick or pop blisters; cold sores are contagious during outbreak.",
+      "Wash hands after touching the area; avoid touching eyes.",
+      "Avoid kissing or sharing utensils, towels, or lip products until fully healed.",
+      "Use sunscreen on lips — sun exposure can trigger outbreaks.",
+      "Return if the sore worsens, doesn't heal in 10 days, or you develop multiple/widespread lesions.",
+    ],
+  },
+
+  impetigo: {
+    id: "impetigo",
+    name: "Impetigo",
+    short: "Impetigo",
+    description: "Localized bacterial skin infection (honey-crusted lesions).",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Impetigo Assessment", body: "Localized impetigo (few lesions) can be treated topically. Extensive disease, systemic symptoms, or immunocompromise require referral." },
+      {
+        id: "appearance", type: "question", section: "Presentation",
+        question: "Which describes the lesion(s)?",
+        options: [
+          { label: "Red sores with golden/honey-coloured crust", value: "classic" },
+          { label: "Small fluid-filled blisters that rupture easily", value: "bullous" },
+          { label: "Ulcerated, deeper lesions", value: "ecthyma", redFlag: "Deeper ulcerated lesions may be ecthyma. Refer for systemic antibiotics." },
+          { label: "Other / unclear", value: "unclear", redFlag: "Atypical presentation. Refer for diagnosis." },
+        ],
+      },
+      {
+        id: "extent", type: "question", section: "Extent",
+        question: "How extensive is it?",
+        options: [
+          { label: "Limited — 1 to 3 lesions in one area", value: "limited" },
+          { label: "Moderate — multiple lesions in one area", value: "moderate" },
+          { label: "Extensive — multiple sites or large body surface", value: "extensive", redFlag: "Extensive impetigo requires systemic antibiotics. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Fever or feeling unwell", value: "fever" },
+          { label: "Lymph node swelling", value: "lymph" },
+          { label: "Immunocompromised", value: "immuno" },
+          { label: "Recurrent (treated before recently)", value: "recurrent" },
+          { label: "Lesions on or near face / eyes", value: "face" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("fever") || v.includes("lymph")) return { redFlag: "Systemic symptoms suggest broader infection. Refer for systemic antibiotics." };
+          if (v.includes("immuno")) return { redFlag: "Immunocompromised patient. Refer." };
+          if (v.includes("recurrent")) return { redFlag: "Recurrent impetigo may indicate carrier state or resistance. Refer." };
+          if (v.includes("face")) return { redFlag: "Periocular/facial impetigo warrants physician assessment. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "mupirocin", name: "Mupirocin 2% ointment", brand: "Bactroban", dose: "Apply thin layer TID", duration: "5 days", notes: "First-line topical for limited impetigo.", contraindications: "Hypersensitivity." },
+      { id: "fusidic_acid", name: "Fusidic acid 2% cream", brand: "Fucidin", dose: "Apply TID–QID", duration: "7 days", notes: "Alternative to mupirocin.", contraindications: "Hypersensitivity." },
+    ],
+    counsellingPoints: [
+      "Wash the affected area gently with soap and water before each application.",
+      "Cover lesions with a clean dressing if possible.",
+      "Wash hands thoroughly after touching the area; don't share towels.",
+      "Keep nails short and discourage scratching to prevent spread.",
+      "The patient should stay home from school/daycare for 24 hours after starting treatment.",
+      "Return if no improvement in 5 days, lesions spread, or fever develops.",
+    ],
+  },
+
+  insect_bites: {
+    id: "insect_bites",
+    name: "Insect Bites & Urticaria",
+    short: "Bites / hives",
+    description: "Mild insect bite reactions or hives (urticaria).",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Bites & Urticaria Assessment", body: "Localized reactions and mild urticaria respond to antihistamines and topical care. Anaphylaxis requires emergency response (911)." },
+      {
+        id: "type", type: "question", section: "Presentation",
+        question: "What is the patient experiencing?",
+        options: [
+          { label: "Localized insect bite (mosquito, blackfly, etc.)", value: "bite" },
+          { label: "Hives (raised itchy welts coming and going)", value: "hives" },
+          { label: "Both bites and hives", value: "both" },
+          { label: "Bee/wasp sting reaction", value: "sting" },
+        ],
+      },
+      {
+        id: "anaphylaxis", type: "multiselect", section: "Red flags — Emergency",
+        question: "Any of these signs of severe allergic reaction?",
+        help: "Any one of these means CALL 911 — not pharmacy management.",
+        options: [
+          { label: "Difficulty breathing or wheezing", value: "breathing" },
+          { label: "Swelling of face, lips, tongue, or throat", value: "swelling" },
+          { label: "Tightness in throat or chest", value: "throat" },
+          { label: "Dizziness, fainting, or weak pulse", value: "dizziness" },
+          { label: "Widespread severe hives with any of the above", value: "severe_hives" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.length > 0 && !v.includes("none")) return { redFlag: "Signs of anaphylaxis or severe allergic reaction. CALL 911 IMMEDIATELY. If patient has an EpiPen, use it now." };
+          if (v.length === 0) return "Select 'None of the above' if no emergency signs.";
+          return null;
+        },
+      },
+      {
+        id: "other_flags", type: "multiselect", section: "Red flags",
+        question: "Other concerns?",
+        options: [
+          { label: "Signs of infection at bite (red, warm, pus, expanding)", value: "infected" },
+          { label: "Hives persisting >6 weeks (chronic urticaria)", value: "chronic" },
+          { label: "Tick bite specifically", value: "tick" },
+          { label: "Spider bite suspected with severe symptoms", value: "spider" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("infected")) return { redFlag: "Possible secondary infection or cellulitis. Refer." };
+          if (v.includes("chronic")) return { redFlag: "Chronic urticaria needs allergist/dermatologist evaluation. Refer." };
+          if (v.includes("tick")) return { redFlag: "Tick bites use the separate tick-bite Lyme prophylaxis pathway. Switch to that assessment." };
+          if (v.includes("spider")) return { redFlag: "Severe spider bite reaction. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if none apply.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "cetirizine_bite", name: "Cetirizine", brand: "Reactine", dose: "10 mg PO daily", duration: "Until symptoms resolve", notes: "Non-sedating, daytime use.", contraindications: "Severe renal impairment." },
+      { id: "loratadine_bite", name: "Loratadine", brand: "Claritin", dose: "10 mg PO daily", duration: "Until symptoms resolve", notes: "Non-sedating.", contraindications: "Severe hepatic impairment." },
+      { id: "diphenhydramine", name: "Diphenhydramine", brand: "Benadryl", dose: "25–50 mg PO Q6H PRN", duration: "PRN", notes: "Sedating — useful at night. Caution in elderly.", contraindications: "Closed-angle glaucoma, BPH, severe asthma." },
+      { id: "hydrocortisone_bite", name: "Hydrocortisone 1% cream", brand: "—", dose: "Apply to affected area BID", duration: "5–7 days", notes: "Reduces itch and inflammation.", contraindications: "Skin infection." },
+      { id: "calamine", name: "Calamine lotion", brand: "—", dose: "Apply PRN", duration: "PRN", notes: "Soothes itch.", contraindications: "Hypersensitivity." },
+    ],
+    counsellingPoints: [
+      "Don't scratch — it makes itching worse and risks infection.",
+      "Cool compress for 10–15 minutes can reduce swelling and itch.",
+      "Identify and avoid triggers if known.",
+      "If you have a history of severe allergic reactions, carry your EpiPen at all times.",
+      "Get to emergency immediately if breathing difficulty, throat tightness, or facial swelling develops — even if symptoms seem mild now.",
+    ],
+  },
+
+  tick_bite: {
+    id: "tick_bite",
+    name: "Tick Bite — Lyme Prophylaxis",
+    short: "Tick bite",
+    description: "Post-exposure prophylaxis after blacklegged tick bite.",
+    citation: "OCP Algorithm — Tick Bite Lyme Prophylaxis (verify current version)",
+    estimatedTime: "3 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Tick Bite — Lyme Prophylaxis", body: "Single-dose doxycycline can prevent Lyme disease if given within 72 hours of tick removal, with specific criteria. If a Lyme rash (erythema migrans) is already present, this is established Lyme — refer for treatment, not prophylaxis." },
+      {
+        id: "tick_attached", type: "question", section: "Exposure",
+        question: "How long was the tick attached?",
+        options: [
+          { label: "≥36 hours (or attached time unknown but engorged)", value: "ge36" },
+          { label: "Less than 36 hours and not engorged", value: "lt36", redFlag: "Tick attached <36 hours has very low Lyme transmission risk. Prophylaxis not indicated. Counsel on monitoring." },
+        ],
+      },
+      {
+        id: "time_since_removal", type: "question", section: "Timing",
+        question: "How long ago was the tick removed?",
+        options: [
+          { label: "Within 72 hours", value: "le72" },
+          { label: "More than 72 hours ago", value: "gt72", redFlag: "Beyond 72-hour prophylaxis window. Refer for monitoring/management." },
+        ],
+      },
+      {
+        id: "endemic", type: "question", section: "Geographic risk",
+        question: "Was the bite in a Lyme-endemic area?",
+        help: "In Ontario this includes much of southern/eastern Ontario. Check Public Health Ontario maps.",
+        options: [
+          { label: "Yes — endemic area for blacklegged tick", value: "endemic" },
+          { label: "Unsure", value: "unsure", redFlag: "If unsure of endemic status, defer to physician for risk assessment." },
+          { label: "No — low-risk area", value: "low_risk", redFlag: "Low-risk area — prophylaxis benefit minimal. Counsel on monitoring." },
+        ],
+      },
+      {
+        id: "em_rash", type: "question", section: "Examination",
+        question: "Is there an erythema migrans (EM) rash already present?",
+        help: "EM is an expanding red ring or 'bull's-eye' rash, usually appearing 3–30 days after the bite.",
+        options: [
+          { label: "No rash", value: "no_rash" },
+          { label: "Yes — expanding red rash at bite site", value: "em", redFlag: "EM rash means established Lyme disease. Refer for treatment course (not single-dose prophylaxis)." },
+        ],
+      },
+      {
+        id: "contraindications", type: "multiselect", section: "Contraindications",
+        question: "Any of these apply to the patient?",
+        options: [
+          { label: "Pregnant or breastfeeding", value: "pregnancy" },
+          { label: "Child under 8 years old", value: "young_child" },
+          { label: "Allergy to doxycycline or tetracyclines", value: "allergy" },
+          { label: "Severe hepatic impairment", value: "hepatic" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("pregnancy")) return { redFlag: "Doxycycline contraindicated in pregnancy/breastfeeding. Refer." };
+          if (v.includes("young_child")) return { redFlag: "Doxycycline use in children <8 needs physician decision. Refer." };
+          if (v.includes("allergy")) return { redFlag: "Doxycycline allergy — alternative regimens require physician decision. Refer." };
+          if (v.includes("hepatic")) return { redFlag: "Severe hepatic impairment. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no contraindications.";
+          return null;
+        },
+      },
+      { id: "current_meds", type: "input", section: "Medications", question: "Current medications (especially warfarin, isotretinoin)?", inputType: "text", placeholder: "List relevant meds or NKDA" },
+    ],
+    drugs: [
+      { id: "doxycycline", name: "Doxycycline", brand: "Vibramycin", dose: "200 mg PO single dose (adults)", duration: "Single dose", notes: "Take with full glass of water; remain upright 30 min. Photosensitivity possible.", contraindications: "Pregnancy, children <8, tetracycline allergy, severe hepatic impairment." },
+    ],
+    counsellingPoints: [
+      "Take the dose with a full glass of water; stay upright for 30 minutes after to prevent esophageal irritation.",
+      "Use sunscreen and protective clothing — doxycycline causes photosensitivity for several days.",
+      "Watch for an expanding red rash at the bite site, fever, fatigue, joint pain, or facial droop in the next 30 days. Any of these — see a doctor immediately.",
+      "Single-dose doxycycline reduces (but doesn't eliminate) Lyme risk. The bigger protection is monitoring.",
+      "For future prevention: long sleeves and pants in tick areas, DEET-containing repellent, full-body tick check after time outdoors.",
+    ],
+  },
+
+  msk: {
+    id: "msk",
+    name: "Musculoskeletal Sprains & Strains",
+    short: "Sprains / strains",
+    description: "Minor sprains, strains, and soft-tissue injuries.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2–3 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "MSK Injury Assessment", body: "Mild sprains and strains respond to RICE plus oral or topical analgesics. Suspected fractures, neurovascular compromise, or significant trauma require referral." },
+      {
+        id: "mechanism", type: "question", section: "Mechanism",
+        question: "How did the injury happen?",
+        options: [
+          { label: "Twisting or sudden sprain (ankle, wrist)", value: "sprain" },
+          { label: "Pulled muscle / overuse", value: "strain" },
+          { label: "Direct blunt trauma", value: "blunt" },
+          { label: "Significant trauma — fall from height, MVC, sports collision", value: "major", redFlag: "Major trauma needs evaluation for fracture and other injuries. Refer." },
+        ],
+      },
+      {
+        id: "site", type: "question", section: "Location",
+        question: "Where is the injury?",
+        options: [
+          { label: "Ankle / foot", value: "ankle" },
+          { label: "Knee", value: "knee" },
+          { label: "Wrist / hand", value: "wrist" },
+          { label: "Shoulder / upper arm", value: "shoulder" },
+          { label: "Back (lower)", value: "back" },
+          { label: "Neck or head", value: "neck", redFlag: "Neck or head injury requires medical evaluation. Refer." },
+        ],
+      },
+      {
+        id: "function", type: "question", section: "Severity",
+        question: "Can the patient use the area normally?",
+        options: [
+          { label: "Yes — full use, just pain", value: "full" },
+          { label: "Limited — pain limits movement", value: "limited" },
+          { label: "Unable to bear weight (lower limb)", value: "unable_weight", redFlag: "Inability to bear weight raises fracture concern. Refer for evaluation." },
+          { label: "Unable to use limb at all", value: "unable", redFlag: "Inability to use the limb suggests significant injury. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Visible deformity", value: "deformity" },
+          { label: "Severe swelling", value: "swelling" },
+          { label: "Numbness, tingling, or weakness", value: "neuro" },
+          { label: "Cool, pale, or blue distal to injury", value: "circulation" },
+          { label: "Joint feels unstable", value: "instability" },
+          { label: "Open wound at injury site", value: "open_wound" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("deformity") || v.includes("circulation")) return { redFlag: "Deformity or vascular compromise. Refer urgently." };
+          if (v.includes("neuro")) return { redFlag: "Neurological symptoms suggest nerve involvement. Refer." };
+          if (v.includes("instability")) return { redFlag: "Joint instability suggests ligament injury. Refer." };
+          if (v.includes("open_wound")) return { redFlag: "Open wound with injury — risk of compound fracture or infection. Refer." };
+          if (v.includes("swelling")) return { redFlag: "Severe swelling warrants assessment for fracture. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies (especially NSAIDs / aspirin)?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "diclofenac_gel", name: "Diclofenac 1% gel", brand: "Voltaren Emulgel", dose: "Apply 2–4 g to affected area QID", duration: "Up to 7 days", notes: "Topical NSAID — fewer systemic effects than oral.", contraindications: "Broken skin, NSAID allergy, third-trimester pregnancy." },
+      { id: "ibuprofen_msk", name: "Ibuprofen", brand: "Advil", dose: "400 mg PO Q6H PRN", duration: "5 days", notes: "Take with food. Reduces pain and inflammation.", contraindications: "GI ulcer, renal impairment, NSAID allergy, third-trimester pregnancy." },
+      { id: "naproxen_msk", name: "Naproxen sodium", brand: "Aleve", dose: "220–440 mg PO BID", duration: "5–7 days", notes: "Longer-acting NSAID.", contraindications: "GI ulcer, renal impairment, NSAID allergy." },
+      { id: "acetaminophen", name: "Acetaminophen", brand: "Tylenol", dose: "500–1000 mg PO Q6H (max 4 g/day)", duration: "PRN", notes: "Use if NSAIDs contraindicated.", contraindications: "Severe hepatic impairment." },
+    ],
+    counsellingPoints: [
+      "RICE in the first 48 hours: Rest, Ice (15–20 min, every 2–3 hours), Compression bandage, Elevation above heart level.",
+      "After 48–72 hours, gentle movement and stretching helps recovery — don't immobilize too long.",
+      "Apply topical NSAIDs to clean, intact skin; wash hands after.",
+      "Take oral NSAIDs with food to reduce stomach upset.",
+      "Return to a doctor if no improvement in 5–7 days, swelling worsens, you can't bear weight, or you develop numbness or tingling.",
+    ],
+  },
+
+  canker_sores: {
+    id: "canker_sores",
+    name: "Canker Sores (Aphthous Ulcers)",
+    short: "Canker sores",
+    description: "Minor recurrent aphthous ulcers in the mouth.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Canker Sore Assessment", body: "Minor aphthous ulcers usually heal in 7–14 days. Persistent, very large, or systemic-symptom presentations require referral." },
+      {
+        id: "appearance", type: "question", section: "Presentation",
+        question: "What does the sore(s) look like?",
+        options: [
+          { label: "Small (<10 mm), round, white/yellow with red border", value: "minor" },
+          { label: "Larger (>10 mm) or deeper", value: "major", redFlag: "Major aphthous ulcers may need physician treatment. Refer." },
+          { label: "Multiple small clustered sores", value: "herpetiform" },
+          { label: "Other / unclear", value: "unclear", redFlag: "Atypical oral lesion. Refer for diagnosis." },
+        ],
+      },
+      {
+        id: "duration", type: "question", section: "Duration",
+        question: "How long has it been there?",
+        options: [
+          { label: "Less than 1 week", value: "lt1w" },
+          { label: "1–2 weeks", value: "1to2w" },
+          { label: "More than 3 weeks", value: "gt3w", redFlag: "Oral lesion >3 weeks needs evaluation to rule out other diagnosis. Refer." },
+        ],
+      },
+      {
+        id: "frequency", type: "question", section: "History",
+        question: "How often does the patient get them?",
+        options: [
+          { label: "First time / occasional (1–3 per year)", value: "occasional" },
+          { label: "Frequent (4–11 per year)", value: "frequent" },
+          { label: "Very frequent or chronic (every month)", value: "chronic", redFlag: "Frequent recurrent aphthous ulceration may indicate underlying condition (Behçet's, IBD, deficiency). Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Genital ulcers also present", value: "genital" },
+          { label: "Eye inflammation", value: "eye" },
+          { label: "GI symptoms (abdominal pain, diarrhea, blood)", value: "gi" },
+          { label: "Fever, joint pain, fatigue", value: "systemic" },
+          { label: "Immunocompromised", value: "immuno" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("genital") || v.includes("eye") || v.includes("systemic")) return { redFlag: "Possible Behçet's disease or systemic illness. Refer." };
+          if (v.includes("gi")) return { redFlag: "Possible IBD presentation. Refer." };
+          if (v.includes("immuno")) return { redFlag: "Immunocompromised. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "benzydamine", name: "Benzydamine 0.15% mouthwash", brand: "Tantum", dose: "Rinse 15 mL Q1.5–3H, do not swallow", duration: "Until healed (max 7 days)", notes: "Anti-inflammatory rinse for pain relief.", contraindications: "Hypersensitivity." },
+      { id: "lidocaine_oral", name: "Lidocaine viscous 2%", brand: "Xylocaine viscous", dose: "Apply 2–3 mL to ulcer up to QID", duration: "PRN", notes: "Numbs ulcer for eating/drinking.", contraindications: "Lidocaine allergy." },
+      { id: "amlexanox", name: "Amlexanox 5% paste", brand: "Aphthasol", dose: "Apply small amount to ulcer QID", duration: "Until healed", notes: "Speeds healing if started early.", contraindications: "Hypersensitivity." },
+      { id: "triamcinolone_orabase", name: "Triamcinolone 0.1% in Orabase", brand: "Kenalog in Orabase", dose: "Apply small amount BID–QID", duration: "Until healed", notes: "Topical steroid in adhesive base.", contraindications: "Oral fungal/viral infection." },
+    ],
+    counsellingPoints: [
+      "Apply topical treatments after eating, then avoid food/drink for at least 30 minutes.",
+      "Avoid foods that irritate — citrus, spicy, very hot, sharp/crunchy.",
+      "A soft toothbrush and avoiding sodium lauryl sulfate (SLS) toothpaste may reduce recurrence.",
+      "Most canker sores heal in 7–14 days even without treatment.",
+      "See a doctor if a sore persists more than 3 weeks, you get them very frequently, or develop other symptoms (eye/genital sores, GI issues, fever).",
+    ],
+  },
+
+  pinworms: {
+    id: "pinworms",
+    name: "Threadworms / Pinworms",
+    short: "Pinworms",
+    description: "Enterobius vermicularis infection (perianal itching).",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Pinworm Assessment", body: "Pinworms cause perianal itching, especially at night. Treatment is straightforward; whole household should be treated simultaneously." },
+      {
+        id: "symptoms", type: "multiselect", section: "Symptoms",
+        question: "What is the patient experiencing?",
+        options: [
+          { label: "Itching around the anus, especially at night", value: "perianal_itch" },
+          { label: "Restless sleep / waking from itching", value: "restless" },
+          { label: "Visible worms (small, white, thread-like)", value: "visible" },
+          { label: "Tape-test confirmed eggs/worms", value: "confirmed" },
+          { label: "Vaginal itch (girls)", value: "vaginal" },
+        ],
+        validate: (v) => v.length === 0 ? { redFlag: "No pinworm symptoms reported. Reassess." } : null,
+      },
+      {
+        id: "household", type: "question", section: "Household",
+        question: "Does the patient live with others?",
+        help: "All household members should be treated simultaneously to prevent re-infection.",
+        options: [
+          { label: "Yes — treat household concurrently", value: "household" },
+          { label: "No — patient lives alone", value: "alone" },
+          { label: "Lives in shared facility (residence, daycare)", value: "shared" },
+        ],
+      },
+      {
+        id: "age", type: "question", section: "Patient",
+        question: "Patient age?",
+        options: [
+          { label: "Adult or child ≥2 years", value: "adult_child" },
+          { label: "Child <2 years", value: "young", redFlag: "Pinworm treatment in children <2 years should be physician-directed. Refer." },
+          { label: "Pregnant or breastfeeding", value: "pregnancy", redFlag: "Pregnancy/breastfeeding considerations for anthelmintic use. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Signs of secondary skin infection", value: "infected" },
+          { label: "Recurrent despite treatment", value: "recurrent" },
+          { label: "Severe abdominal pain or weight loss", value: "abdominal" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("infected")) return { redFlag: "Secondary infection from scratching. Refer for assessment." };
+          if (v.includes("recurrent")) return { redFlag: "Recurrent despite treatment may indicate ongoing exposure or other parasite. Refer." };
+          if (v.includes("abdominal")) return { redFlag: "Abdominal symptoms uncommon for pinworms; consider other diagnosis. Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "pyrantel", name: "Pyrantel pamoate", brand: "Combantrin", dose: "11 mg/kg PO single dose (max 1 g)", duration: "Repeat in 2 weeks", notes: "First-line. Treat all household contacts simultaneously.", contraindications: "Severe hepatic impairment, age <2." },
+      { id: "mebendazole", name: "Mebendazole", brand: "Vermox", dose: "100 mg PO single dose", duration: "Repeat in 2 weeks", notes: "Alternative. Treat all household contacts.", contraindications: "Pregnancy, age <2." },
+    ],
+    counsellingPoints: [
+      "Treat everyone in the household at the same time — this is critical to prevent re-infection.",
+      "Repeat the dose in 2 weeks to catch eggs that hatched after the first dose.",
+      "Wash all bedding, pyjamas, and towels in hot water on the day of treatment.",
+      "Keep fingernails short and discourage nail-biting.",
+      "Wash hands after using the bathroom and before eating; shower in the morning to remove eggs.",
+      "Itching should improve within a few days. See a doctor if it persists or comes back.",
+    ],
+  },
+
+  vvc: {
+    id: "vvc",
+    name: "Vulvovaginal Candidiasis",
+    short: "Yeast infection",
+    description: "Uncomplicated vaginal yeast infection.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2–3 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Vulvovaginal Candidiasis Assessment", body: "Uncomplicated yeast infection in a non-pregnant patient with classic symptoms can be treated with topical or single-dose oral antifungals. Atypical features, recurrence, or pregnancy require referral." },
+      {
+        id: "symptoms", type: "multiselect", section: "Symptoms",
+        question: "What is the patient experiencing?",
+        options: [
+          { label: "Vaginal/vulvar itching", value: "itch" },
+          { label: "White, thick, 'cottage cheese' discharge", value: "discharge" },
+          { label: "Burning, especially with urination", value: "burning" },
+          { label: "Vaginal redness or soreness", value: "redness" },
+        ],
+        validate: (v) => v.length === 0 ? { redFlag: "No yeast infection symptoms reported. Reassess." } : null,
+      },
+      {
+        id: "discharge_type", type: "question", section: "Symptoms",
+        question: "How would the patient describe the discharge?",
+        options: [
+          { label: "White, thick, like cottage cheese (no smell)", value: "thick_white" },
+          { label: "Thin, grey/white, fishy odour", value: "fishy", redFlag: "Fishy odour suggests bacterial vaginosis, not candida. Refer or use BV pathway." },
+          { label: "Yellow/green or frothy", value: "yellow_green", redFlag: "Yellow/green or frothy discharge suggests trichomoniasis or other STI. Refer." },
+          { label: "Bloody", value: "bloody", redFlag: "Bloody discharge requires evaluation. Refer." },
+        ],
+      },
+      {
+        id: "history", type: "question", section: "History",
+        question: "Has the patient had this before?",
+        options: [
+          { label: "Yes, had yeast infection before — same symptoms", value: "recurrence_known" },
+          { label: "First time ever", value: "first", redFlag: "First-time presentation should ideally be physician-confirmed. Consider referral to confirm diagnosis." },
+          { label: "≥4 episodes in past year (recurrent)", value: "recurrent", redFlag: "Recurrent VVC requires workup. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Pregnant or breastfeeding", value: "pregnant" },
+          { label: "Diabetes (uncontrolled)", value: "diabetes" },
+          { label: "Immunocompromised", value: "immuno" },
+          { label: "Fever or pelvic pain", value: "fever" },
+          { label: "STI concern (multiple partners, partner symptoms)", value: "sti" },
+          { label: "Used antifungal recently with no improvement", value: "failed" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("pregnant")) return { redFlag: "Pregnancy — oral fluconazole contraindicated; topical may still be option but defer to physician. Refer." };
+          if (v.includes("diabetes") || v.includes("immuno")) return { redFlag: "Complicated VVC (immunocompromised/diabetic). Refer." };
+          if (v.includes("fever")) return { redFlag: "Fever or pelvic pain may indicate PID. Refer urgently." };
+          if (v.includes("sti")) return { redFlag: "STI workup needed. Refer." };
+          if (v.includes("failed")) return { redFlag: "Treatment failure. Refer for culture/alternative." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies (especially azoles)?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "clotrimazole_vag", name: "Clotrimazole 1% cream + 200 mg vaginal tablet", brand: "Canesten", dose: "Cream PV at bedtime + 200 mg vaginal tablet daily", duration: "3 days", notes: "Topical therapy. Combo packs available.", contraindications: "Hypersensitivity." },
+      { id: "miconazole_vag", name: "Miconazole 2% cream + 100 mg vaginal ovule", brand: "Monistat 7", dose: "Apply or insert nightly", duration: "7 days", notes: "Topical therapy.", contraindications: "Warfarin (interaction with oral)." },
+      { id: "terconazole", name: "Terconazole 0.4% vaginal cream", brand: "Terazol", dose: "1 applicator PV nightly", duration: "7 days", notes: "Alternative azole.", contraindications: "Hypersensitivity." },
+      { id: "fluconazole", name: "Fluconazole oral", brand: "Diflucan", dose: "150 mg PO single dose", duration: "Single dose", notes: "Convenient single-dose option. Avoid in pregnancy.", contraindications: "Pregnancy, drug interactions (warfarin, statins, certain antiarrhythmics)." },
+    ],
+    counsellingPoints: [
+      "Symptoms should improve within 2–3 days. Complete the full course of topical treatment.",
+      "Avoid scented soaps, douches, and bubble baths — they disrupt vaginal flora.",
+      "Wear cotton underwear; avoid tight synthetic clothing.",
+      "Topical antifungals can weaken latex condoms — use alternative protection during treatment.",
+      "Partner usually doesn't need treatment unless they have symptoms (balanitis).",
+      "Return if no improvement in 7 days, symptoms worsen, you develop fever or pelvic pain, or it comes back within a few weeks.",
+    ],
+  },
+
+  nausea: {
+    id: "nausea",
+    name: "Nausea & Vomiting",
+    short: "Nausea",
+    description: "Mild self-limited nausea (motion, mild gastroenteritis).",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Nausea Assessment", body: "Mild nausea from motion sickness or self-limiting gastroenteritis can be managed in pharmacy. Severe symptoms, dehydration, or possible serious causes require referral." },
+      {
+        id: "cause", type: "question", section: "Cause",
+        question: "What seems to be the cause?",
+        options: [
+          { label: "Motion sickness (travel, car, boat)", value: "motion" },
+          { label: "Mild gastroenteritis (24h flu)", value: "gastro" },
+          { label: "Pregnancy-related (morning sickness)", value: "pregnancy" },
+          { label: "Migraine-associated", value: "migraine" },
+          { label: "Unclear / no obvious cause", value: "unclear", redFlag: "Nausea without clear cause warrants evaluation, especially if persistent. Refer." },
+        ],
+      },
+      {
+        id: "duration", type: "question", section: "Duration",
+        question: "How long has it been going on?",
+        options: [
+          { label: "Hours / starting today", value: "today" },
+          { label: "1–2 days", value: "1to2d" },
+          { label: "More than 2 days", value: "gt2d", redFlag: "Persistent nausea beyond 48 hours warrants evaluation. Refer." },
+        ],
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Severe abdominal pain", value: "abd_pain" },
+          { label: "Blood in vomit (bright or coffee-ground)", value: "blood" },
+          { label: "Recent head injury", value: "head" },
+          { label: "Severe headache or stiff neck", value: "headache" },
+          { label: "Signs of dehydration (dizziness, dark urine, confusion)", value: "dehydration" },
+          { label: "High fever", value: "fever" },
+          { label: "Chest pain, shortness of breath", value: "cardiac" },
+          { label: "Pregnant with severe vomiting (can't keep fluids down)", value: "hyperemesis" },
+          { label: "Unable to keep fluids down >12 hours", value: "fluids" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("abd_pain") || v.includes("blood") || v.includes("cardiac")) return { redFlag: "Concerning features for serious abdominal or cardiac pathology. Refer urgently." };
+          if (v.includes("head") || v.includes("headache")) return { redFlag: "Head injury or severe headache with nausea — refer urgently to rule out neurological cause." };
+          if (v.includes("dehydration") || v.includes("hyperemesis") || v.includes("fluids")) return { redFlag: "Dehydration risk. Refer for evaluation and rehydration." };
+          if (v.includes("fever")) return { redFlag: "High fever with nausea — refer for evaluation of infection." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "dimenhydrinate", name: "Dimenhydrinate", brand: "Gravol", dose: "50 mg PO Q4–6H PRN (max 400 mg/day)", duration: "Up to 24–48h", notes: "First-line for motion sickness. Sedating.", contraindications: "Closed-angle glaucoma, BPH, severe asthma. Caution in elderly." },
+      { id: "doxylamine_pyridoxine", name: "Doxylamine + Pyridoxine", brand: "Diclectin", dose: "2 tablets at bedtime (titrate up)", duration: "Through nausea period (pregnancy)", notes: "First-line for nausea and vomiting of pregnancy.", contraindications: "Hypersensitivity, MAOI use." },
+      { id: "prochlorperazine", name: "Prochlorperazine", brand: "Stemetil", dose: "5–10 mg PO Q6–8H PRN", duration: "Short-term", notes: "Useful for migraine-associated nausea.", contraindications: "Parkinson's, severe CNS depression, children <2 (or <10 kg)." },
+    ],
+    counsellingPoints: [
+      "Sip clear fluids slowly and frequently to stay hydrated — even if you're not eating.",
+      "Bland foods (BRAT — bananas, rice, applesauce, toast) when you can tolerate solids.",
+      "For motion sickness: take dimenhydrinate 30–60 minutes before travel.",
+      "Avoid driving or operating machinery if using dimenhydrinate or prochlorperazine — they cause drowsiness.",
+      "Get to a doctor or ER if you can't keep fluids down for over 12 hours, you see blood in vomit, or you have severe pain or signs of dehydration.",
+    ],
+  },
+
+  acne: {
+    id: "acne",
+    name: "Mild Acne",
+    short: "Acne (mild)",
+    description: "Mild acne — comedones and small papules/pustules.",
+    citation: "Adapted from CPhA — verify before clinical use",
+    estimatedTime: "2 min",
+    available: true,
+    steps: [
+      { id: "intro", type: "intro", title: "Mild Acne Assessment", body: "Topical treatment is appropriate for mild acne. Moderate-severe acne, scarring, or sudden adult-onset features require physician assessment." },
+      {
+        id: "severity", type: "question", section: "Severity",
+        question: "How severe is the acne?",
+        options: [
+          { label: "Mild — scattered comedones, few small pustules", value: "mild" },
+          { label: "Moderate — many lesions, some inflammatory papules", value: "moderate", redFlag: "Moderate acne benefits from prescription regimens. Refer." },
+          { label: "Severe — nodules, cysts, or scarring present", value: "severe", redFlag: "Severe nodulocystic or scarring acne needs dermatology referral." },
+        ],
+      },
+      {
+        id: "pattern", type: "multiselect", section: "Pattern",
+        question: "Where is the acne located?",
+        options: [
+          { label: "Face", value: "face" },
+          { label: "Chest or back", value: "trunk" },
+          { label: "Shoulders or arms", value: "limbs" },
+        ],
+        validate: (v) => v.length === 0 ? "Select at least one location." : null,
+      },
+      {
+        id: "red_flags", type: "multiselect", section: "Red flags",
+        question: "Any of these present?",
+        options: [
+          { label: "Sudden adult-onset (>25 years, no prior history)", value: "adult_onset" },
+          { label: "Signs of hormonal cause (irregular periods, hirsutism)", value: "hormonal" },
+          { label: "Signs of secondary infection (warm, painful, expanding)", value: "infected" },
+          { label: "Active scarring", value: "scarring" },
+          { label: "Already on systemic acne treatment", value: "systemic" },
+          { label: "Pregnant or planning pregnancy", value: "pregnancy" },
+          { label: "None of the above", value: "none" },
+        ],
+        validate: (v) => {
+          if (v.includes("adult_onset") || v.includes("hormonal")) return { redFlag: "Adult-onset or hormonal-pattern acne warrants physician workup. Refer." };
+          if (v.includes("infected")) return { redFlag: "Possible secondary infection. Refer." };
+          if (v.includes("scarring")) return { redFlag: "Scarring acne benefits from earlier prescription therapy. Refer." };
+          if (v.includes("systemic")) return { redFlag: "Patient on systemic acne therapy — coordinate with prescriber." };
+          if (v.includes("pregnancy")) return { redFlag: "Pregnancy — many topical acne agents contraindicated (retinoids). Refer." };
+          if (v.length === 0) return "Select 'None of the above' if no flags are present.";
+          return null;
+        },
+      },
+      { id: "allergies", type: "input", section: "Medications", question: "Drug allergies?", inputType: "text", placeholder: "e.g., NKDA" },
+    ],
+    drugs: [
+      { id: "adapalene", name: "Adapalene 0.1% gel", brand: "Differin", dose: "Apply thin layer once daily at bedtime", duration: "Trial of 8–12 weeks", notes: "First-line topical retinoid. May worsen briefly before improving.", contraindications: "Pregnancy, severe eczema." },
+      { id: "benzoyl_peroxide", name: "Benzoyl peroxide 2.5–5% gel/wash", brand: "—", dose: "Apply once daily; can increase to BID if tolerated", duration: "Trial of 8–12 weeks", notes: "Bleaches fabric. Start low concentration to reduce irritation.", contraindications: "Hypersensitivity." },
+      { id: "clindamycin_topical", name: "Clindamycin 1% topical solution/gel", brand: "Dalacin T", dose: "Apply BID", duration: "Combine with BPO to limit resistance", notes: "Always combine with benzoyl peroxide to prevent resistance.", contraindications: "History of pseudomembranous colitis." },
+      { id: "salicylic_acid", name: "Salicylic acid 0.5–2% wash", brand: "—", dose: "Use once daily", duration: "Ongoing", notes: "Mild keratolytic, OTC option.", contraindications: "Salicylate allergy." },
+    ],
+    counsellingPoints: [
+      "Acne treatment takes 8–12 weeks to show clear results — don't quit early.",
+      "Apply a thin layer to clean dry skin; use only at night for retinoids.",
+      "Use a gentle cleanser (not scrubs) and oil-free, non-comedogenic moisturizer.",
+      "Always wear sunscreen — retinoids and BPO increase sun sensitivity.",
+      "Don't pick or squeeze pimples — this causes scarring.",
+      "If using both BPO and a retinoid, apply BPO in the morning and retinoid at night.",
+      "See a doctor if skin worsens after 12 weeks, you develop scarring, or have signs of hormonal issues.",
+    ],
+  },
+};
+
+/* ============================================================
+   COMPONENTS
+   ============================================================ */
+
+function Topbar({ pharmacy, savedAt, onLogoClick }) {
+  return (
+    <header className="topbar no-print">
+      <div className="topbar-left">
+        <a href="#" className="logo" onClick={(e) => { e.preventDefault(); onLogoClick(); }}>
+          <span className="logo-mark">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+              <path d="m9 14 2 2 4-4"/>
+            </svg>
+          </span>
+          <span>Minor Ailments Assistant</span>
+        </a>
+        {pharmacy && <span className="pharmacy-tag">{pharmacy.name}</span>}
+      </div>
+      {savedAt && (
+        <div className="save-indicator">
+          <span className="save-dot"></span>
+          <span>Saved locally · {new Date(savedAt).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}</span>
+        </div>
+      )}
+    </header>
+  );
+}
+
+function DemoBanner() {
+  return (
+    <div className="demo-banner no-print">
+      Portfolio demo · Not for clinical use · No real patient data should be entered
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer>
+      <div style={{maxWidth: 880, margin: "0 auto"}}>
+        <p style={{margin: 0}}>
+          <strong>Minor Ailments Assistant</strong> · open-source structured-intake & documentation tool for Ontario pharmacists
+        </p>
+        <p style={{margin: "8px 0 0", fontSize: "0.78rem"}}>
+          Citations reference Ontario College of Pharmacists assessment & prescribing algorithms. The tool documents assessments — pharmacists make all clinical decisions. All data stored locally in your browser; nothing is sent to a server.
+        </p>
+      </div>
+    </footer>
+  );
+}
+
+/* ----- Home ----- */
+function HomeScreen({ pharmacy, current, past, onSetup, onStart, onResume, onViewPast, onViewPastAssessment }) {
+  return (
+    <div>
+      <div className="hero">
+        <div className="eyebrow" style={{marginBottom: 14}}>Ontario · Minor Ailments Program</div>
+        <h1>
+          Document a minor ailments assessment <span className="display-italic">in three minutes</span>.
+        </h1>
+        <p className="lede">
+          A structured-intake and documentation companion for Ontario pharmacists. Walks the published OCP algorithms step-by-step, flags red flags clearly, and generates the SOAP note, prescription, patient handout, and physician fax in one click.
+        </p>
+        {!pharmacy ? (
+          <button className="btn btn-primary btn-large" onClick={onSetup}>Set up my pharmacy →</button>
+        ) : current ? (
+          <div className="row" style={{justifyContent: "center"}}>
+            <button className="btn btn-primary btn-large" onClick={onResume}>Resume assessment in progress →</button>
+            <button className="btn btn-ghost btn-large" onClick={onStart}>Start new assessment</button>
+          </div>
+        ) : (
+          <button className="btn btn-primary btn-large" onClick={onStart}>Start new assessment →</button>
+        )}
+      </div>
+
+      {pharmacy && (
+        <>
+          <div className="card-feature stack">
+            <div className="row-between">
+              <h3>How this works</h3>
+              <span className="citation">v1.0</span>
+            </div>
+            <div style={{display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28, marginTop: 12}}>
+              <div>
+                <div className="eyebrow" style={{marginBottom: 8}}>01 · Assess</div>
+                <p className="text-soft small">One question per screen. Plain language. Red flags trigger an immediate stop with a clear reason.</p>
+              </div>
+              <div>
+                <div className="eyebrow" style={{marginBottom: 8}}>02 · Decide</div>
+                <p className="text-soft small">The tool summarises responses against algorithm criteria. The pharmacist confirms or refers — the tool doesn't decide.</p>
+              </div>
+              <div>
+                <div className="eyebrow" style={{marginBottom: 8}}>03 · Document</div>
+                <p className="text-soft small">SOAP note, prescription, patient counselling handout, and physician fax — all generated and printable.</p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{marginTop: 36}}>
+            <div className="row-between" style={{marginBottom: 12}}>
+              <h3>Recent assessments</h3>
+              {past.length > 0 && (
+                <button className="btn btn-ghost" onClick={onViewPast}>View all ({past.length})</button>
+              )}
+            </div>
+            {past.length === 0 ? (
+              <div className="card-tight text-soft" style={{textAlign: "center", padding: "32px"}}>
+                <p style={{margin: 0}}>No assessments yet. Start your first one above.</p>
+              </div>
+            ) : (
+              <div className="card-tight">
+                {past.slice(0, 3).map((a, i) => (
+                  <button key={a.id} className="past-row" onClick={() => onViewPastAssessment(i)}>
+                    <span className="tag tag-neutral mono">{new Date(a.completedAt).toLocaleDateString()}</span>
+                    <div>
+                      <div style={{fontWeight: 500}}>{a.patient.name || "Anonymous"} · {CONDITIONS[a.condition].short}</div>
+                      <div className="text-faint small">{a.outcome === "prescribed" ? `Prescribed ${a.selectedDrug?.name}` : "Referred to physician"}</div>
+                    </div>
+                    <span className={`tag ${a.outcome === "prescribed" ? "tag-success" : "tag-warn"}`}>
+                      {a.outcome === "prescribed" ? "Prescribed" : "Referred"}
+                    </span>
+                    <span className="past-chevron">→</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ----- Setup ----- */
+function SetupScreen({ initial, onSave, onCancel }) {
+  const [form, setForm] = useState(initial || {
+    name: "", pharmacistName: "", license: "", address: "", phone: "", fax: "",
+  });
+  const set = (k) => (e) => setForm({...form, [k]: e.target.value});
+
+  return (
+    <div>
+      <div className="screen-header">
+        {initial && <button className="back-button" onClick={onCancel}>← Back</button>}
+        <div className="eyebrow">One-time setup</div>
+        <h2>Pharmacy details</h2>
+        <p className="text-soft" style={{marginTop: 8}}>Used in the prescription header, fax cover, and patient handouts. Stored only in this browser.</p>
+      </div>
+      <div className="card stack">
+        <div className="field">
+          <label className="label">Pharmacy name</label>
+          <input className="input" value={form.name} onChange={set("name")} placeholder="e.g., Lancaster Wellness Pharmacy" />
+        </div>
+        <div className="field-row">
+          <div className="field">
+            <label className="label">Pharmacist name</label>
+            <input className="input" value={form.pharmacistName} onChange={set("pharmacistName")} placeholder="e.g., Jane Doe, RPh" />
+          </div>
+          <div className="field">
+            <label className="label">OCP licence #</label>
+            <input className="input mono" value={form.license} onChange={set("license")} placeholder="e.g., 123456" />
+          </div>
+        </div>
+        <div className="field">
+          <label className="label">Address</label>
+          <input className="input" value={form.address} onChange={set("address")} placeholder="e.g., 123 King St, Kitchener, ON N2G 1A1" />
+        </div>
+        <div className="field-row">
+          <div className="field">
+            <label className="label">Phone</label>
+            <input className="input mono" value={form.phone} onChange={set("phone")} placeholder="519-555-0100" />
+          </div>
+          <div className="field">
+            <label className="label">Fax</label>
+            <input className="input mono" value={form.fax} onChange={set("fax")} placeholder="519-555-0101" />
+          </div>
+        </div>
+        <div className="row-end">
+          {initial && <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>}
+          <button
+            className="btn btn-primary"
+            disabled={!form.name || !form.pharmacistName}
+            onClick={() => onSave(form)}
+          >
+            {initial ? "Save changes" : "Continue →"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ----- Condition picker ----- */
+function ConditionPicker({ onPick, onBack }) {
+  return (
+    <div>
+      <div className="screen-header">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">Step 1 of 4</div>
+        <h2>Which minor ailment?</h2>
+        <p className="text-soft" style={{marginTop: 8}}>Pick the condition you're assessing. Three are available in this version; more coming as the OCP expands the list.</p>
+      </div>
+      <div className="condition-grid">
+        {Object.values(CONDITIONS).map((c) => (
+          <button
+            key={c.id}
+            className="condition-card"
+            disabled={!c.available}
+            onClick={() => c.available && onPick(c.id)}
+          >
+            <div className="row-between">
+              <div className="eyebrow">{c.available ? "Available" : "Coming soon"}</div>
+              {c.available && <span className="tag tag-success">{c.estimatedTime}</span>}
+            </div>
+            <h4>{c.name}</h4>
+            <p className="desc">{c.description}</p>
+          </button>
+        ))}
+      </div>
+      <p className="text-faint small" style={{marginTop: 24}}>
+        Other conditions in the Ontario program (impetigo, dermatitis, GERD, dysmenorrhea, etc.) are scheduled for v2. Adding a condition is a JSON config change, not a code change.
+      </p>
+    </div>
+  );
+}
+
+/* ----- Patient info ----- */
+function PatientInfoScreen({ initial, condition, onNext, onBack }) {
+  const [form, setForm] = useState(initial || {
+    name: "", age: "", sex: "", healthCard: "",
+  });
+  const set = (k) => (e) => setForm({...form, [k]: e.target.value});
+
+  return (
+    <div>
+      <div className="screen-header">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">Step 2 of 4 · {CONDITIONS[condition].short}</div>
+        <h2>Patient information</h2>
+        <p className="text-soft" style={{marginTop: 8}}>For documentation. All data is stored only in this browser.</p>
+      </div>
+      <div className="card stack">
+        <div className="field">
+          <label className="label">Patient name</label>
+          <input className="input" value={form.name} onChange={set("name")} placeholder="Full name" />
+          <span className="label-hint">Or anonymized identifier for demo purposes.</span>
+        </div>
+        <div className="field-row">
+          <div className="field">
+            <label className="label">Date of birth or age</label>
+            <input className="input" value={form.age} onChange={set("age")} placeholder="e.g., 1987-04-12 or 38" />
+          </div>
+          <div className="field">
+            <label className="label">Sex assigned at birth</label>
+            <select className="select" value={form.sex} onChange={set("sex")}>
+              <option value="">Select…</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+            </select>
+          </div>
+        </div>
+        <div className="field">
+          <label className="label">Ontario Health Card #</label>
+          <input className="input mono" value={form.healthCard} onChange={set("healthCard")} placeholder="0000-000-000-XX" />
+          <span className="label-hint">Required for funded program billing. Use a fake number for demo.</span>
+        </div>
+        <div className="row-end">
+          <button className="btn btn-ghost" onClick={() => onNext({ name: "Demo Patient", age: "32", sex: "female", healthCard: "1234-567-890-XX" })}>
+            Use demo patient
+          </button>
+          <button
+            className="btn btn-primary"
+            disabled={!form.name || !form.sex}
+            onClick={() => onNext(form)}
+          >
+            Begin assessment →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ----- Assessment (one question per screen) ----- */
+function AssessmentScreen({ condition, responses, onAnswer, onBack, onAbort }) {
+  const cond = CONDITIONS[condition];
+  const questionSteps = cond.steps.filter(s => s.type !== "intro");
+  const currentIndex = questionSteps.findIndex(s => responses[s.id] === undefined);
+  const introShown = responses["__intro_shown"];
+
+  if (!introShown) {
+    return <IntroScreen condition={condition} onContinue={() => onAnswer("__intro_shown", true)} onBack={onBack} />;
+  }
+
+  if (currentIndex === -1) {
+    // All answered - parent handles transition
+    return null;
+  }
+
+  const step = questionSteps[currentIndex];
+  const total = questionSteps.length;
+
+  return (
+    <div>
+      <div className="progress-meta">
+        <span>Question {currentIndex + 1} of {total}</span>
+        <span>{step.section || "Assessment"}</span>
+      </div>
+      <div className="progress">
+        {questionSteps.map((_, i) => (
+          <div
+            key={i}
+            className={`progress-dot ${i < currentIndex ? "done" : i === currentIndex ? "current" : ""}`}
+          />
+        ))}
+      </div>
+      <div className="screen-header">
+        <button className="back-button" onClick={onBack}>← Back</button>
+      </div>
+
+      <div className="card-feature">
+        <h2 style={{marginBottom: step.help ? 12 : 28}}>{step.question}</h2>
+        {step.help && <p className="text-soft" style={{marginBottom: 28, fontSize: "1rem"}}>{step.help}</p>}
+
+        <QuestionInput key={step.id} step={step} onAnswer={(v) => onAnswer(step.id, v)} />
+
+        <hr style={{marginTop: 36}} />
+        <div className="row-between">
+          <span className="citation">📖 {cond.citation}</span>
+          <button className="btn btn-ghost small" onClick={onAbort}>Abort assessment</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IntroScreen({ condition, onContinue, onBack }) {
+  const cond = CONDITIONS[condition];
+  const intro = cond.steps.find(s => s.type === "intro");
+  return (
+    <div>
+      <div className="screen-header">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">Step 3 of 4 · {cond.short}</div>
+        <h2>{intro?.title || cond.name}</h2>
+      </div>
+      <div className="card stack">
+        <p style={{fontSize: "1.05rem"}}>{intro?.body}</p>
+        <div style={{background: "var(--bg)", padding: 20, borderRadius: 8, borderLeft: "3px solid var(--primary)"}}>
+          <div className="eyebrow" style={{marginBottom: 8}}>What you'll see</div>
+          <ul style={{margin: 0, paddingLeft: 20, color: "var(--ink-soft)"}}>
+            <li>One question per screen, plain language</li>
+            <li>Red flags stop the assessment with a clear reason</li>
+            <li>You confirm the criteria are met — the tool doesn't diagnose</li>
+            <li>You select the drug from the OCP Schedule 4 list</li>
+            <li>Documents generate at the end, ready to print</li>
+          </ul>
+        </div>
+        <div className="row-between">
+          <span className="citation">📖 {cond.citation}</span>
+          <button className="btn btn-primary" onClick={onContinue}>Begin →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QuestionInput({ step, onAnswer }) {
+  const [value, setValue] = useState(step.type === "multiselect" ? [] : "");
+  const [error, setError] = useState(null);
+
+  const validate = (v) => {
+    if (step.validate) {
+      const r = step.validate(v);
+      if (r) {
+        if (typeof r === "string") return { error: r };
+        return r; // could be { redFlag: "..." }
+      }
+    }
+    return null;
+  };
+
+  if (step.type === "question") {
+    return (
+      <div className="choice-stack">
+        {step.options.map((opt, i) => (
+          <button
+            key={opt.value}
+            className="choice"
+            onClick={() => onAnswer({ value: opt.value, label: opt.label, redFlag: opt.redFlag })}
+          >
+            <div className="row" style={{gap: 14}}>
+              <span className="choice-letter">{String.fromCharCode(65 + i)}</span>
+              <span className="choice-content">{opt.label}</span>
+            </div>
+            <span className="choice-arrow">→</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  if (step.type === "multiselect") {
+    return (
+      <div>
+        <div className="choice-stack">
+          {step.options.map((opt) => {
+            const checked = value.includes(opt.value);
+            return (
+              <button
+                key={opt.value}
+                className="choice"
+                style={checked ? {borderColor: "var(--primary)", background: "var(--primary-soft)"} : {}}
+                onClick={() => {
+                  let next;
+                  if (opt.value === "none") {
+                    next = checked ? [] : ["none"];
+                  } else {
+                    if (checked) next = value.filter(v => v !== opt.value);
+                    else next = [...value.filter(v => v !== "none"), opt.value];
+                  }
+                  setValue(next);
+                  setError(null);
+                }}
+              >
+                <div className="row" style={{gap: 14}}>
+                  <span className="choice-letter" style={checked ? {background: "var(--primary)", color: "white"} : {}}>
+                    {checked ? "✓" : ""}
+                  </span>
+                  <span className="choice-content">{opt.label}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        {error && <p style={{color: "var(--stop)", marginTop: 12, fontSize: "0.92rem"}}>{error}</p>}
+        <div className="row-end" style={{marginTop: 24}}>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              const r = validate(value);
+              if (r?.error) { setError(r.error); return; }
+              const labels = value.map(v => step.options.find(o => o.value === v)?.label).filter(Boolean);
+              onAnswer({ value, labels, redFlag: r?.redFlag });
+            }}
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (step.type === "input") {
+    const isTextarea = step.inputType === "textarea";
+    return (
+      <div>
+        {isTextarea ? (
+          <textarea className="textarea" value={value} onChange={(e) => { setValue(e.target.value); setError(null); }} placeholder={step.placeholder}/>
+        ) : (
+          <input
+            className="input"
+            type={step.inputType === "number" ? "number" : "text"}
+            value={value}
+            onChange={(e) => { setValue(e.target.value); setError(null); }}
+            placeholder={step.placeholder}
+          />
+        )}
+        {error && <p style={{color: "var(--stop)", marginTop: 12, fontSize: "0.92rem"}}>{error}</p>}
+        <div className="row-end" style={{marginTop: 24}}>
+          <button
+            className="btn btn-primary"
+            disabled={!value && step.inputType !== "text"}
+            onClick={() => {
+              const r = validate(value);
+              if (r?.error) { setError(r.error); return; }
+              onAnswer({ value, label: value, redFlag: r?.redFlag });
+            }}
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+/* ----- Red flag stop ----- */
+function RedFlagScreen({ reason, condition, patient, pharmacy, onReturn, onGenerateReferral }) {
+  return (
+    <div>
+      <div className="screen-header">
+        <div className="eyebrow" style={{color: "var(--stop)"}}>Stop · Refer to physician</div>
+        <h2>Patient does not meet criteria</h2>
+      </div>
+      <div className="stop-card stack">
+        <div className="eyebrow">Reason</div>
+        <p style={{fontSize: "1.1rem", margin: 0}}>{reason}</p>
+        <hr style={{borderColor: "rgba(142,40,40,0.2)"}}/>
+        <p style={{margin: 0, color: "var(--ink-soft)"}}>
+          Based on the patient's responses, this condition cannot be safely managed under the minor ailments scope. Refer the patient to a physician or nurse practitioner. Consider generating a referral note below.
+        </p>
+        <div className="row" style={{marginTop: 8}}>
+          <button className="btn btn-secondary" onClick={onGenerateReferral}>Generate referral note →</button>
+          <button className="btn btn-ghost" onClick={onReturn}>Return to home</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ----- Review ----- */
+function ReviewScreen({ condition, patient, responses, onConfirm, onBack, onRefer }) {
+  const cond = CONDITIONS[condition];
+  const stepResponses = cond.steps
+    .filter(s => s.type === "question" || s.type === "multiselect" || s.type === "input")
+    .map(s => ({
+      step: s,
+      response: responses[s.id],
+    }));
+
+  return (
+    <div>
+      <div className="screen-header">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">Step 4 of 4 · Pharmacist review</div>
+        <h2>Review and confirm</h2>
+        <p className="text-soft" style={{marginTop: 8}}>All criteria met, no red flags raised. Confirm to proceed to drug selection — or refer if your judgment differs.</p>
+      </div>
+
+      <div className="success-card stack" style={{marginBottom: 24}}>
+        <div className="row" style={{gap: 12}}>
+          <span className="tag tag-success">✓ Eligibility criteria met</span>
+          <span className="tag tag-success">✓ No red flags</span>
+        </div>
+        <p style={{margin: 0, color: "var(--ink-soft)", fontSize: "0.95rem"}}>
+          The tool has walked through the OCP algorithm and found no exclusions. Clinical judgment remains with the pharmacist.
+        </p>
+      </div>
+
+      <div className="card">
+        <h3 style={{marginBottom: 4}}>{patient.name}</h3>
+        <p className="text-soft small" style={{margin: 0}}>{patient.age} · {patient.sex} · {cond.short}</p>
+
+        <h4 style={{marginTop: 28, marginBottom: 12}}>Assessment summary</h4>
+        <div className="review-list">
+          {stepResponses.map(({step, response}) => (
+            <div key={step.id} className="review-item">
+              <div className="review-question">{step.question}</div>
+              <div className="review-answer">
+                {Array.isArray(response?.labels) ? response.labels.join(", ") : (response?.label || response?.value || "—")}
+              </div>
+            </div>
+          ))}
+        </div>
+        <span className="citation" style={{marginTop: 18, display: "inline-flex"}}>📖 {cond.citation}</span>
+      </div>
+
+      <div className="row-between" style={{marginTop: 24}}>
+        <button className="btn btn-secondary" onClick={onRefer}>Refer instead</button>
+        <button className="btn btn-primary btn-large" onClick={onConfirm}>Confirm and select drug →</button>
+      </div>
+    </div>
+  );
+}
+
+/* ----- Drug selection ----- */
+function DrugSelectionScreen({ condition, onSelect, onBack }) {
+  const cond = CONDITIONS[condition];
+  const [selected, setSelected] = useState(null);
+
+  return (
+    <div>
+      <div className="screen-header">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">Drug selection · OCP Schedule 4 Column 3</div>
+        <h2>Select medication</h2>
+        <p className="text-soft" style={{marginTop: 8}}>
+          Only drugs listed in Schedule 4 Column 3 of O. Reg. 256/24 are prescribable for this minor ailment. The pharmacist makes the clinical choice.
+        </p>
+      </div>
+
+      <div className="stack">
+        {cond.drugs.map((d) => (
+          <button
+            key={d.id}
+            className="card"
+            style={{
+              textAlign: "left",
+              cursor: "pointer",
+              borderColor: selected?.id === d.id ? "var(--primary)" : "var(--rule)",
+              background: selected?.id === d.id ? "var(--primary-soft)" : "var(--surface)",
+              padding: 24,
+              fontFamily: "inherit",
+              color: "inherit",
+            }}
+            onClick={() => setSelected(d)}
+          >
+            <div className="row-between" style={{marginBottom: 8}}>
+              <h4 style={{margin: 0}}>{d.name} {d.brand !== "—" && <span className="text-faint" style={{fontWeight: 400}}>· {d.brand}</span>}</h4>
+              {selected?.id === d.id && <span className="tag tag-success">Selected</span>}
+            </div>
+            <div className="mono" style={{color: "var(--primary)", fontWeight: 500, marginBottom: 8}}>
+              {d.dose} × {d.duration}
+            </div>
+            <p className="text-soft small" style={{margin: 0}}>{d.notes}</p>
+            <p className="small" style={{margin: "8px 0 0", color: "var(--warn)"}}><strong>Avoid in:</strong> {d.contraindications}</p>
+          </button>
+        ))}
+      </div>
+
+      <div className="row-end" style={{marginTop: 24}}>
+        <button className="btn btn-primary btn-large" disabled={!selected} onClick={() => onSelect(selected)}>
+          Generate documents →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ----- Outputs (SOAP, Rx, handout, fax) ----- */
+function OutputsScreen({ condition, patient, pharmacy, responses, drug, onComplete, onBack }) {
+  const cond = CONDITIONS[condition];
+  const [tab, setTab] = useState("soap");
+  const date = new Date();
+  const dateStr = date.toLocaleDateString("en-CA");
+  const timeStr = date.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+
+  const printRef = useRef();
+
+  const handlePrint = () => window.print();
+
+  return (
+    <div>
+      <div className="screen-header no-print">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">Documents generated</div>
+        <h2>Print, save, and complete</h2>
+      </div>
+
+      <div className="row no-print" style={{marginBottom: 16}}>
+        {[
+          {id: "soap", label: "SOAP Note"},
+          {id: "rx", label: "Prescription"},
+          {id: "handout", label: "Patient Handout"},
+          {id: "fax", label: "Physician Fax"},
+        ].map(t => (
+          <button
+            key={t.id}
+            className={`btn ${tab === t.id ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setTab(t.id)}
+          >{t.label}</button>
+        ))}
+      </div>
+
+      <div ref={printRef}>
+        {tab === "soap" && <SOAPNote condition={condition} patient={patient} pharmacy={pharmacy} responses={responses} drug={drug} dateStr={dateStr} timeStr={timeStr} />}
+        {tab === "rx" && <Prescription patient={patient} pharmacy={pharmacy} drug={drug} dateStr={dateStr} />}
+        {tab === "handout" && <PatientHandout condition={condition} drug={drug} pharmacy={pharmacy} dateStr={dateStr} />}
+        {tab === "fax" && <PhysicianFax condition={condition} patient={patient} pharmacy={pharmacy} drug={drug} dateStr={dateStr} />}
+      </div>
+
+      <div className="row-between no-print" style={{marginTop: 28}}>
+        <button className="btn btn-secondary" onClick={handlePrint}>🖨 Print this document</button>
+        <button className="btn btn-primary btn-large" onClick={onComplete}>Save and finish →</button>
+      </div>
+    </div>
+  );
+}
+
+function SOAPNote({ condition, patient, pharmacy, responses, drug, dateStr, timeStr }) {
+  const cond = CONDITIONS[condition];
+  const responseList = cond.steps
+    .filter(s => s.type === "question" || s.type === "multiselect" || s.type === "input")
+    .filter(s => responses[s.id] !== undefined)
+    .map(s => {
+      const r = responses[s.id];
+      const answer = Array.isArray(r?.labels)
+        ? r.labels.join(", ")
+        : (r?.label || r?.value || "—");
+      return { question: s.question, answer, section: s.section };
+    });
+
+  return (
+    <div className="document">
+      <div className="doc-header">
+        <div className="doc-meta">SOAP Note · Minor Ailments Service</div>
+        <h3>{pharmacy.name}</h3>
+        <div className="text-soft small">{pharmacy.address} · {pharmacy.phone}</div>
+      </div>
+
+      <div className="row-between" style={{marginBottom: 24}}>
+        <div>
+          <div className="doc-meta">Patient</div>
+          <strong>{patient.name}</strong> · {patient.age}, {patient.sex}<br/>
+          <span className="mono small">HC# {patient.healthCard || "—"}</span>
+        </div>
+        <div style={{textAlign: "right"}}>
+          <div className="doc-meta">Date / Time</div>
+          <span className="mono">{dateStr} · {timeStr}</span>
+        </div>
+      </div>
+
+      <div className="soap-section">
+        <span className="soap-letter">S</span>
+        <div className="soap-body">
+          <strong>Subjective.</strong> Patient presented to pharmacy reporting symptoms consistent with {cond.name.toLowerCase()}. Assessment captured per OCP/CPhA algorithm:
+          <ul style={{margin: "8px 0 0", paddingLeft: 20}}>
+            {responseList.map((r, i) => (
+              <li key={i} style={{marginBottom: 4}}>
+                <span style={{color: "var(--ink-soft)"}}>{r.question}</span> <em>{r.answer}</em>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="soap-section">
+        <span className="soap-letter">O</span>
+        <div className="soap-body">
+          <strong>Objective.</strong> Patient assessed in person at the pharmacy. Vital signs not formally measured; no signs of systemic illness on observation. All algorithm exclusion criteria reviewed; none triggered.
+        </div>
+      </div>
+
+      <div className="soap-section">
+        <span className="soap-letter">A</span>
+        <div className="soap-body">
+          <strong>Assessment.</strong> {cond.name}. Patient meets all eligibility criteria per OCP Schedule 4 minor ailments scope. No red flags identified during structured assessment.
+        </div>
+      </div>
+
+      <div className="soap-section">
+        <span className="soap-letter">P</span>
+        <div className="soap-body">
+          <strong>Plan.</strong> Prescribed <strong>{drug.name} {drug.dose} for {drug.duration}</strong>. Patient counselled on administration, expected response time, full-course completion, and red-flag symptoms requiring follow-up. Patient acknowledged understanding. Notification sent to family physician where applicable. Follow-up if symptoms not resolving in expected timeframe or if worsening.
+        </div>
+      </div>
+
+      <hr/>
+      <div className="row-between">
+        <div>
+          <div className="doc-meta">Prescribing pharmacist</div>
+          <strong>{pharmacy.pharmacistName}</strong>
+          <div className="mono small">OCP Licence: {pharmacy.license}</div>
+        </div>
+        <div className="text-faint small mono" style={{textAlign: "right"}}>
+          Algorithm: {cond.citation}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Prescription({ patient, pharmacy, drug, dateStr }) {
+  return (
+    <div className="document" style={{maxWidth: 600, margin: "0 auto"}}>
+      <div className="doc-header" style={{textAlign: "center"}}>
+        <h3>{pharmacy.name}</h3>
+        <div className="text-soft small">{pharmacy.address}</div>
+        <div className="text-soft small">Tel {pharmacy.phone} · Fax {pharmacy.fax}</div>
+      </div>
+
+      <div className="row-between" style={{marginBottom: 28}}>
+        <div>
+          <div className="doc-meta">Patient</div>
+          <strong>{patient.name}</strong><br/>
+          <span className="small">{patient.age}, {patient.sex}</span><br/>
+          <span className="mono small">HC# {patient.healthCard || "—"}</span>
+        </div>
+        <div style={{textAlign: "right"}}>
+          <div className="doc-meta">Date</div>
+          <span className="mono">{dateStr}</span>
+        </div>
+      </div>
+
+      <div style={{textAlign: "center", marginBottom: 8}}>
+        <span className="rx-symbol">℞</span>
+      </div>
+
+      <div style={{padding: 24, background: "var(--bg)", borderRadius: 8, marginBottom: 28}}>
+        <div style={{fontSize: "1.2rem", fontWeight: 500, marginBottom: 8, fontFamily: "var(--font-display)"}}>
+          {drug.name}
+        </div>
+        <div className="mono" style={{fontSize: "1rem", marginBottom: 4}}>
+          <strong>Sig:</strong> {drug.dose}
+        </div>
+        <div className="mono" style={{fontSize: "1rem", marginBottom: 4}}>
+          <strong>Duration:</strong> {drug.duration}
+        </div>
+        <div className="mono" style={{fontSize: "1rem"}}>
+          <strong>Mitte:</strong> as required for course
+        </div>
+        <div className="mono small" style={{marginTop: 12, color: "var(--ink-soft)"}}>
+          Refills: 0 · No substitution: per pharmacist judgment
+        </div>
+      </div>
+
+      <hr/>
+
+      <div className="row-between" style={{marginTop: 28}}>
+        <div>
+          <div style={{borderTop: "1px solid var(--ink)", paddingTop: 4, minWidth: 200}}>
+            <strong>{pharmacy.pharmacistName}</strong>
+          </div>
+          <div className="mono small">OCP Lic: {pharmacy.license}</div>
+          <div className="mono small">Prescriber ID Ref: <strong>09</strong></div>
+        </div>
+        <div className="text-faint small mono">
+          Issued under Ontario Minor<br/>Ailments Program (O. Reg. 256/24)
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PatientHandout({ condition, drug, pharmacy, dateStr }) {
+  const cond = CONDITIONS[condition];
+  return (
+    <div className="document">
+      <div className="doc-header">
+        <div className="doc-meta">Patient information</div>
+        <h3>About your medication</h3>
+      </div>
+
+      <div style={{padding: 20, background: "var(--primary-soft)", borderRadius: 8, marginBottom: 24}}>
+        <div style={{fontFamily: "var(--font-display)", fontSize: "1.5rem", color: "var(--primary)", marginBottom: 4}}>
+          {drug.name}
+        </div>
+        <div className="mono" style={{color: "var(--primary)"}}>
+          <strong>How to take it:</strong> {drug.dose}, for {drug.duration}
+        </div>
+      </div>
+
+      <h4 style={{marginBottom: 12}}>What to know</h4>
+      <ul style={{paddingLeft: 22, lineHeight: 1.8, marginBottom: 24}}>
+        {cond.counsellingPoints.map((p, i) => (
+          <li key={i}>{p}</li>
+        ))}
+      </ul>
+
+      <div style={{padding: 20, background: "var(--stop-soft)", borderRadius: 8, marginBottom: 24, borderLeft: "4px solid var(--stop)"}}>
+        <h4 style={{color: "var(--stop)", marginBottom: 8}}>Call your doctor or come back to the pharmacy if:</h4>
+        <ul style={{paddingLeft: 22, lineHeight: 1.7, margin: 0}}>
+          <li>Symptoms get worse instead of better</li>
+          <li>You develop a fever or back pain</li>
+          <li>Symptoms aren't better in 48–72 hours</li>
+          <li>You see blood in your urine</li>
+          <li>You feel unwell in any new way</li>
+        </ul>
+      </div>
+
+      <hr/>
+
+      <div className="row-between">
+        <div>
+          <div className="doc-meta">Questions?</div>
+          <strong>{pharmacy.name}</strong>
+          <div className="mono small">{pharmacy.phone}</div>
+        </div>
+        <div className="text-faint small">
+          Generated {dateStr || new Date().toLocaleDateString("en-CA")}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PhysicianFax({ condition, patient, pharmacy, drug, dateStr }) {
+  const cond = CONDITIONS[condition];
+  return (
+    <div className="document">
+      <div className="doc-header">
+        <div className="doc-meta">FAX · Notification of pharmacist prescribing</div>
+        <h3>{pharmacy.name}</h3>
+        <div className="text-soft small">{pharmacy.address} · Tel {pharmacy.phone} · Fax {pharmacy.fax}</div>
+      </div>
+
+      <div style={{marginBottom: 24}}>
+        <div className="doc-meta">To · Family physician of</div>
+        <strong>{patient.name}</strong> · {patient.age}, {patient.sex} · HC# {patient.healthCard || "—"}
+      </div>
+
+      <p>Dear Doctor,</p>
+      <p>
+        Your patient <strong>{patient.name}</strong> attended our pharmacy on {dateStr} and was assessed for symptoms consistent with <strong>{cond.name.toLowerCase()}</strong>. Following the Ontario College of Pharmacists assessment & prescribing algorithm, the patient met all eligibility criteria with no red flags identified.
+      </p>
+      <p>
+        I have prescribed <strong>{drug.name} {drug.dose} for {drug.duration}</strong> under the Ontario Minor Ailments Program (O. Reg. 256/24).
+      </p>
+      <p>
+        The patient was counselled on administration, expected response time, full-course completion, and red-flag symptoms requiring follow-up. They were advised to return if symptoms have not resolved in 48–72 hours or if symptoms worsen.
+      </p>
+      <p>This notification is provided for your patient's chart. Please contact us if you have any questions or concerns.</p>
+      <p>Sincerely,</p>
+
+      <div style={{marginTop: 36}}>
+        <div style={{borderTop: "1px solid var(--ink)", paddingTop: 4, maxWidth: 280}}>
+          <strong>{pharmacy.pharmacistName}</strong>
+        </div>
+        <div className="mono small">OCP Licence: {pharmacy.license}</div>
+        <div className="mono small">Prescriber ID Ref: 09</div>
+      </div>
+    </div>
+  );
+}
+
+/* ----- Past assessments ----- */
+function PastAssessmentsScreen({ past, onBack, onClear, onViewPastAssessment }) {
+  return (
+    <div>
+      <div className="screen-header">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">History</div>
+        <h2>Past assessments</h2>
+        <p className="text-soft" style={{marginTop: 8}}>{past.length} assessment{past.length === 1 ? "" : "s"} stored locally in this browser.</p>
+      </div>
+      {past.length === 0 ? (
+        <div className="card-tight text-soft center" style={{padding: 36}}>
+          <p style={{margin: 0}}>No past assessments.</p>
+        </div>
+      ) : (
+        <div className="card-tight">
+          {past.map((a, i) => (
+            <button key={a.id} className="past-row" onClick={() => onViewPastAssessment(i)}>
+              <span className="tag tag-neutral mono">{new Date(a.completedAt).toLocaleString()}</span>
+              <div>
+                <div style={{fontWeight: 500}}>{a.patient.name || "Anonymous"} · {CONDITIONS[a.condition].short}</div>
+                <div className="text-faint small">
+                  {a.outcome === "prescribed" ? `Prescribed ${a.selectedDrug?.name} ${a.selectedDrug?.dose}` : "Referred to physician"}
+                </div>
+              </div>
+              <span className={`tag ${a.outcome === "prescribed" ? "tag-success" : "tag-warn"}`}>
+                {a.outcome === "prescribed" ? "Prescribed" : "Referred"}
+              </span>
+              <span className="past-chevron">→</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {past.length > 0 && (
+        <div className="row-end" style={{marginTop: 24}}>
+          <button className="btn btn-ghost small" onClick={onClear}>Clear history (demo)</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ----- View past assessment ----- */
+function ViewPastScreen({ assessment, pharmacy, onBack }) {
+  const cond = CONDITIONS[assessment.condition];
+  const date = new Date(assessment.completedAt);
+  const dateStr = date.toLocaleDateString("en-CA");
+  const timeStr = date.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  const isPrescribed = assessment.outcome === "prescribed";
+  const [tab, setTab] = useState(isPrescribed ? "soap" : "summary");
+
+  const handlePrint = () => window.print();
+
+  return (
+    <div>
+      <div className="screen-header no-print">
+        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="eyebrow">Past assessment · {dateStr} · {timeStr}</div>
+        <h2>{assessment.patient.name || "Anonymous"} <span style={{color: "var(--ink-faint)", fontWeight: 400}}>· {cond.short}</span></h2>
+        <div className="row" style={{marginTop: 12}}>
+          <span className={`tag ${isPrescribed ? "tag-success" : "tag-warn"}`}>
+            {isPrescribed ? `Prescribed ${assessment.selectedDrug?.name}` : "Referred to physician"}
+          </span>
+        </div>
+      </div>
+
+      {isPrescribed ? (
+        <>
+          <div className="row no-print" style={{marginBottom: 16}}>
+            {[
+              {id: "soap", label: "SOAP Note"},
+              {id: "rx", label: "Prescription"},
+              {id: "handout", label: "Patient Handout"},
+              {id: "fax", label: "Physician Fax"},
+            ].map(t => (
+              <button
+                key={t.id}
+                className={`btn ${tab === t.id ? "btn-primary" : "btn-secondary"}`}
+                onClick={() => setTab(t.id)}
+              >{t.label}</button>
+            ))}
+          </div>
+
+          {tab === "soap" && <SOAPNote condition={assessment.condition} patient={assessment.patient} pharmacy={pharmacy} responses={assessment.responses} drug={assessment.selectedDrug} dateStr={dateStr} timeStr={timeStr} />}
+          {tab === "rx" && <Prescription patient={assessment.patient} pharmacy={pharmacy} drug={assessment.selectedDrug} dateStr={dateStr} />}
+          {tab === "handout" && <PatientHandout condition={assessment.condition} drug={assessment.selectedDrug} pharmacy={pharmacy} dateStr={dateStr} />}
+          {tab === "fax" && <PhysicianFax condition={assessment.condition} patient={assessment.patient} pharmacy={pharmacy} drug={assessment.selectedDrug} dateStr={dateStr} />}
+        </>
+      ) : (
+        <div className="document">
+          <div className="doc-header">
+            <div className="doc-meta">Referral Note · Minor Ailments Service</div>
+            <h3>{pharmacy.name}</h3>
+            <div className="text-soft small">{pharmacy.address} · {pharmacy.phone}</div>
+          </div>
+
+          <div className="row-between" style={{marginBottom: 24}}>
+            <div>
+              <div className="doc-meta">Patient</div>
+              <strong>{assessment.patient.name || "Anonymous"}</strong> · {assessment.patient.age}, {assessment.patient.sex}<br/>
+              <span className="mono small">HC# {assessment.patient.healthCard || "—"}</span>
+            </div>
+            <div style={{textAlign: "right"}}>
+              <div className="doc-meta">Date / Time</div>
+              <span className="mono">{dateStr} · {timeStr}</span>
+            </div>
+          </div>
+
+          <div style={{padding: 20, background: "var(--stop-soft)", borderRadius: 8, marginBottom: 24, borderLeft: "4px solid var(--stop)"}}>
+            <div className="eyebrow" style={{color: "var(--stop)", marginBottom: 8}}>Outcome — Referred</div>
+            <p style={{margin: 0, fontSize: "1.05rem"}}>{assessment.redFlagReason || "Pharmacist clinical judgment — patient referred to physician."}</p>
+          </div>
+
+          <h4 style={{marginBottom: 12}}>Assessment summary</h4>
+          <div className="review-list">
+            {cond.steps
+              .filter(s => s.type === "question" || s.type === "multiselect" || s.type === "input")
+              .filter(s => assessment.responses[s.id] !== undefined)
+              .map(s => {
+                const r = assessment.responses[s.id];
+                const answer = Array.isArray(r?.labels) ? r.labels.join(", ") : (r?.label || r?.value || "—");
+                return (
+                  <div key={s.id} className="review-item">
+                    <div className="review-question">{s.question}</div>
+                    <div className="review-answer">{answer}</div>
+                  </div>
+                );
+              })}
+          </div>
+          <span className="citation" style={{marginTop: 18, display: "inline-flex"}}>📖 {cond.citation}</span>
+        </div>
+      )}
+
+      <div className="row-end no-print" style={{marginTop: 28}}>
+        <button className="btn btn-secondary" onClick={handlePrint}>🖨 Print this document</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   MAIN APP
+   ============================================================ */
+
+function App() {
+  const [state, setState] = useState(() => loadState() || initialState);
+  const [screen, setScreen] = useState(() => {
+    const s = loadState();
+    if (!s?.pharmacy) return "home";
+    if (s?.current) return resolveScreenFromCurrent(s.current);
+    return "home";
+  });
+  const [savedAt, setSavedAt] = useState(Date.now());
+  const [viewingPast, setViewingPast] = useState({ index: null, from: "home" });
+
+  // Persist on every state change
+  useEffect(() => {
+    saveState(state);
+    setSavedAt(Date.now());
+  }, [state]);
+
+  function resolveScreenFromCurrent(current) {
+    if (current.outcome === "red_flagged") return "red_flag";
+    if (current.outcome === "completed") return "outputs";
+    if (current.selectedDrug) return "outputs";
+    if (current.confirmed) return "drug_select";
+    const cond = CONDITIONS[current.condition];
+    if (cond && current.responses) {
+      const allAnswered = cond.steps
+        .filter(s => s.type === "question" || s.type === "multiselect" || s.type === "input")
+        .every(s => current.responses[s.id] !== undefined);
+      if (allAnswered) return "review";
+    }
+    if (current.patient) return "assessment";
+    if (current.condition) return "patient_info";
+    return "condition_picker";
+  }
+
+  function startNewAssessment() {
+    setState((s) => ({ ...s, current: null }));
+    setScreen("condition_picker");
+  }
+
+  function pickCondition(conditionId) {
+    setState((s) => ({
+      ...s,
+      current: {
+        id: "ma-" + Date.now(),
+        condition: conditionId,
+        patient: null,
+        responses: {},
+        outcome: null,
+        startedAt: Date.now(),
+      },
+    }));
+    setScreen("patient_info");
+  }
+
+  function setPatient(patient) {
+    setState((s) => ({
+      ...s,
+      current: { ...s.current, patient },
+    }));
+    setScreen("assessment");
+  }
+
+  function answerQuestion(stepId, response) {
+    const cond = CONDITIONS[state.current.condition];
+    const newResponses = { ...state.current.responses, [stepId]: response };
+
+    // Check for red flag
+    if (response?.redFlag) {
+      setState((s) => ({
+        ...s,
+        current: {
+          ...s.current,
+          responses: newResponses,
+          outcome: "red_flagged",
+          redFlagReason: response.redFlag,
+        },
+      }));
+      setScreen("red_flag");
+      return;
+    }
+
+    // Check if all answered → go to review
+    const allAnswered = cond.steps
+      .filter(s => s.type === "question" || s.type === "multiselect" || s.type === "input")
+      .every(s => newResponses[s.id] !== undefined);
+
+    setState((s) => ({
+      ...s,
+      current: { ...s.current, responses: newResponses },
+    }));
+
+    if (allAnswered) {
+      setScreen("review");
+    }
+  }
+
+  function confirmReview() {
+    setState((s) => ({
+      ...s,
+      current: { ...s.current, confirmed: true },
+    }));
+    setScreen("drug_select");
+  }
+
+  function selectDrug(drug) {
+    setState((s) => ({
+      ...s,
+      current: { ...s.current, selectedDrug: drug },
+    }));
+    setScreen("outputs");
+  }
+
+  function completeAssessment() {
+    const completed = {
+      ...state.current,
+      outcome: "prescribed",
+      completedAt: Date.now(),
+    };
+    setState((s) => ({
+      ...s,
+      current: null,
+      past: [completed, ...s.past],
+    }));
+    setScreen("home");
+  }
+
+  function abortAssessment() {
+    if (!confirm("Abort this assessment? It won't be saved.")) return;
+    setState((s) => ({ ...s, current: null }));
+    setScreen("home");
+  }
+
+  function referFromReview() {
+    const referred = {
+      ...state.current,
+      outcome: "referred",
+      completedAt: Date.now(),
+      redFlagReason: "Pharmacist clinical judgment — patient referred to physician.",
+    };
+    setState((s) => ({
+      ...s,
+      current: null,
+      past: [referred, ...s.past],
+    }));
+    setScreen("home");
+  }
+
+  function returnFromRedFlag() {
+    if (state.current) {
+      const referred = {
+        ...state.current,
+        outcome: "referred",
+        completedAt: Date.now(),
+      };
+      setState((s) => ({
+        ...s,
+        current: null,
+        past: [referred, ...s.past],
+      }));
+    }
+    setScreen("home");
+  }
+
+  function clearHistory() {
+    if (!confirm("Clear all assessment history? Cannot be undone.")) return;
+    setState((s) => ({ ...s, past: [] }));
+  }
+
+  // Render
+  let content;
+  if (!state.pharmacy) {
+    content = (
+      <SetupScreen
+        initial={null}
+        onSave={(form) => {
+          setState((s) => ({ ...s, pharmacy: form }));
+          setScreen("home");
+        }}
+      />
+    );
+  } else {
+    switch (screen) {
+      case "home":
+        content = (
+          <HomeScreen
+            pharmacy={state.pharmacy}
+            current={state.current}
+            past={state.past}
+            onSetup={() => setScreen("setup")}
+            onStart={startNewAssessment}
+            onResume={() => setScreen(resolveScreenFromCurrent(state.current))}
+            onViewPast={() => setScreen("past")}
+            onViewPastAssessment={(i) => { setViewingPast({ index: i, from: "home" }); setScreen("view_past"); }}
+          />
+        );
+        break;
+      case "setup":
+        content = (
+          <SetupScreen
+            initial={state.pharmacy}
+            onSave={(form) => {
+              setState((s) => ({ ...s, pharmacy: form }));
+              setScreen("home");
+            }}
+            onCancel={() => setScreen("home")}
+          />
+        );
+        break;
+      case "condition_picker":
+        content = (
+          <ConditionPicker
+            onPick={pickCondition}
+            onBack={() => setScreen("home")}
+          />
+        );
+        break;
+      case "patient_info":
+        content = (
+          <PatientInfoScreen
+            initial={state.current?.patient}
+            condition={state.current.condition}
+            onNext={setPatient}
+            onBack={() => setScreen("condition_picker")}
+          />
+        );
+        break;
+      case "assessment":
+        content = (
+          <AssessmentScreen
+            condition={state.current.condition}
+            responses={state.current.responses}
+            onAnswer={answerQuestion}
+            onBack={() => setScreen("patient_info")}
+            onAbort={abortAssessment}
+          />
+        );
+        break;
+      case "red_flag":
+        content = (
+          <RedFlagScreen
+            reason={state.current.redFlagReason}
+            condition={state.current.condition}
+            patient={state.current.patient}
+            pharmacy={state.pharmacy}
+            onReturn={returnFromRedFlag}
+            onGenerateReferral={() => alert("Referral note generation — feature stubbed for v1 demo. In production, this would generate a fax-ready referral letter.")}
+          />
+        );
+        break;
+      case "review":
+        content = (
+          <ReviewScreen
+            condition={state.current.condition}
+            patient={state.current.patient}
+            responses={state.current.responses}
+            onConfirm={confirmReview}
+            onBack={() => setScreen("assessment")}
+            onRefer={referFromReview}
+          />
+        );
+        break;
+      case "drug_select":
+        content = (
+          <DrugSelectionScreen
+            condition={state.current.condition}
+            onSelect={selectDrug}
+            onBack={() => setScreen("review")}
+          />
+        );
+        break;
+      case "outputs":
+        content = (
+          <OutputsScreen
+            condition={state.current.condition}
+            patient={state.current.patient}
+            pharmacy={state.pharmacy}
+            responses={state.current.responses}
+            drug={state.current.selectedDrug}
+            onComplete={completeAssessment}
+            onBack={() => setScreen("drug_select")}
+          />
+        );
+        break;
+      case "past":
+        content = (
+          <PastAssessmentsScreen
+            past={state.past}
+            onBack={() => setScreen("home")}
+            onClear={clearHistory}
+            onViewPastAssessment={(i) => { setViewingPast({ index: i, from: "past" }); setScreen("view_past"); }}
+          />
+        );
+        break;
+      case "view_past":
+        if (viewingPast.index === null || !state.past[viewingPast.index]) {
+          content = <HomeScreen pharmacy={state.pharmacy} current={state.current} past={state.past} onSetup={() => setScreen("setup")} onStart={startNewAssessment} onResume={() => {}} onViewPast={() => setScreen("past")} onViewPastAssessment={(i) => { setViewingPast({ index: i, from: "home" }); setScreen("view_past"); }} />;
+        } else {
+          content = (
+            <ViewPastScreen
+              assessment={state.past[viewingPast.index]}
+              pharmacy={state.pharmacy}
+              onBack={() => setScreen(viewingPast.from)}
+            />
+          );
+        }
+        break;
+      default:
+        content = <HomeScreen pharmacy={state.pharmacy} current={state.current} past={state.past} onSetup={() => setScreen("setup")} onStart={startNewAssessment} onResume={() => {}} onViewPast={() => setScreen("past")} />;
+    }
+  }
+
+  return (
+    <div className="app">
+      <Topbar pharmacy={state.pharmacy} savedAt={savedAt} onLogoClick={() => setScreen("home")} />
+      <main>{content}</main>
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+</script>
+</body>
+</html>
